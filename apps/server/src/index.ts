@@ -15,6 +15,8 @@ import recurringRoutes from "./routes/recurring.routes";
 import goalRoutes from "./routes/goal.routes";
 import investmentRoutes from "./routes/investment.routes";
 import debtRoutes from "./routes/debt.routes";
+import insuranceRoutes from "./routes/insurance.routes";
+import healthScoreRoutes from "./routes/healthScore.routes";
 
 const app = express();
 
@@ -31,6 +33,8 @@ app.use("/api/recurring", recurringRoutes);
 app.use("/api/goals", goalRoutes); 
 app.use("/api/investments", investmentRoutes);
 app.use("/api/debts", debtRoutes);
+app.use("/api/insurance", insuranceRoutes);
+app.use("/api/health-score", healthScoreRoutes);
 
 app.use(errorHandler);
 

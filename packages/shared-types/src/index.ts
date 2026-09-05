@@ -5,3 +5,5 @@ export * from "./budget";
 export * from "./recurring";
 export * from "./investment";
 export * from "./debt";
+export * from "./insurance";
+export * from "./healthScore";

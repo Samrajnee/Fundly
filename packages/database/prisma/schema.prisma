@@ -41,6 +41,7 @@ model User {
   budgets          Budget[]
   investments      Investment[]
   debts            Debt[]
+  insurancePolicies InsurancePolicy[]
 }
 
 model SalaryProfile {
@@ -231,4 +232,35 @@ model Debt {
 
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+}
+
+enum InsuranceType {
+  HEALTH
+  LIFE
+  VEHICLE
+  HOME
+  OTHER
+}
+
+enum PremiumFrequency {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+model InsurancePolicy {
+  id               String           @id @default(cuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type             InsuranceType
+  provider         String
+  coverageAmount   Decimal          @db.Decimal(12, 2)
+  premiumAmount    Decimal          @db.Decimal(12, 2)
+  premiumFrequency PremiumFrequency @default(YEARLY)
+  expiryDate       DateTime
+  notes            String?
+
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
