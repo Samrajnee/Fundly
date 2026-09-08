@@ -9,3 +9,5 @@ export * from "./insurance";
 export * from "./healthScore";
 export * from "./emergencyFund";
 export * from "./salaryIncrement";
+export * from "./lifestyleInflation";
+export * from "./monthlyPlan";
