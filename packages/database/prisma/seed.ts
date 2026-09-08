@@ -21,6 +21,17 @@ const defaultCategories = [
 ];
 
 async function main() {
+  await prisma.user.upsert({
+    where: { id: TEMP_USER_ID },
+    update: {},
+    create: {
+      id: TEMP_USER_ID,
+      email: "test@fundly.dev",
+      name: "Test User",
+      passwordHash: "placeholder",
+    },
+  });
+
   for (const cat of defaultCategories) {
     await prisma.category.upsert({
       where: { userId_name: { userId: TEMP_USER_ID, name: cat.name } },
@@ -33,7 +44,7 @@ async function main() {
       },
     });
   }
-  console.log("Seeded default categories.");
+  console.log("Seeded temp user and default categories.");
 }
 
 main()

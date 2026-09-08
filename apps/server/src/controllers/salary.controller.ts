@@ -22,18 +22,20 @@ export async function createSalaryPlan(req: Request, res: Response, next: NextFu
     });
 
     const saved = await prisma.salaryProfile.create({
-      data: {
-        userId: TEMP_USER_ID,
-        monthlySalary: parsed.data.monthlySalary,
-        necessitiesAmount: breakdown.necessitiesAmount,
-        lifestyleAmount: breakdown.lifestyleAmount,
-        savingsAmount: breakdown.savingsAmount,
-        investmentsAmount: breakdown.investmentsAmount,
-        goalsAmount: breakdown.goalsAmount,
-        bufferAmount: breakdown.bufferAmount,
-        isActive: true,
-      },
-    });
+  data: {
+    userId: TEMP_USER_ID,
+    monthlySalary: parsed.data.monthlySalary,
+    livingSituation: parsed.data.livingSituation,
+    supportsFamily: parsed.data.supportsFamily,
+    necessitiesAmount: breakdown.necessitiesAmount,
+    lifestyleAmount: breakdown.lifestyleAmount,
+    savingsAmount: breakdown.savingsAmount,
+    investmentsAmount: breakdown.investmentsAmount,
+    goalsAmount: breakdown.goalsAmount,
+    bufferAmount: breakdown.bufferAmount,
+    isActive: true,
+  },
+});
 
     res.status(201).json({ success: true, data: saved });
   } catch (err) {

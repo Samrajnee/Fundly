@@ -17,6 +17,8 @@ import investmentRoutes from "./routes/investment.routes";
 import debtRoutes from "./routes/debt.routes";
 import insuranceRoutes from "./routes/insurance.routes";
 import healthScoreRoutes from "./routes/healthScore.routes";
+import emergencyFundRoutes from "./routes/emergencyFund.routes";
+import salaryIncrementRoutes from "./routes/salaryIncrement.routes";
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.use("/api/investments", investmentRoutes);
 app.use("/api/debts", debtRoutes);
 app.use("/api/insurance", insuranceRoutes);
 app.use("/api/health-score", healthScoreRoutes);
+app.use("/api/emergency-fund", emergencyFundRoutes);
+app.use("/api/salary-increment", salaryIncrementRoutes);
 
 app.use(errorHandler);
 

@@ -7,3 +7,5 @@ export * from "./investment";
 export * from "./debt";
 export * from "./insurance";
 export * from "./healthScore";
+export * from "./emergencyFund";
+export * from "./salaryIncrement";
