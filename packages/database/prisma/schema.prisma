@@ -32,6 +32,7 @@ model User {
   isFirstSalary    Boolean          @default(false)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
+  netWorthSnapshots NetWorthSnapshot[]
 
   salaryProfiles   SalaryProfile[]
   transactions     Transaction[]
@@ -301,4 +302,18 @@ model MonthlyPlan {
   updatedAt         DateTime @updatedAt
 
   @@unique([userId, month, year])
+}
+
+model NetWorthSnapshot {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalAssets       Decimal  @db.Decimal(14, 2)
+  totalLiabilities  Decimal  @db.Decimal(14, 2)
+  netWorth          Decimal  @db.Decimal(14, 2)
+
+  snapshotDate      DateTime @default(now())
+
+  createdAt         DateTime @default(now())
 }
