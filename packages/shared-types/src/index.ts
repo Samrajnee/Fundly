@@ -15,3 +15,4 @@ export * from "./monthlyReview";
 export * from "./netWorth";
 export * from "./milestone";
 export * from "./spendingInsights";
+export * from "./dashboard";

@@ -25,6 +25,7 @@ import monthlyReviewRoutes from "./routes/monthlyReview.routes";
 import netWorthRoutes from "./routes/netWorth.routes";
 import milestoneRoutes from "./routes/milestone.routes";
 import spendingInsightsRoutes from "./routes/spendingInsights.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use("/api/monthly-review", monthlyReviewRoutes);
 app.use("/api/net-worth", netWorthRoutes);
 app.use("/api/milestones", milestoneRoutes);
 app.use("/api/spending-insights", spendingInsightsRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use(errorHandler);
 
