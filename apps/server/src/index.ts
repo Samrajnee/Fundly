@@ -23,6 +23,8 @@ import lifestyleInflationRoutes from "./routes/lifestyleInflation.routes";
 import monthlyPlanRoutes from "./routes/monthlyPlan.routes";
 import monthlyReviewRoutes from "./routes/monthlyReview.routes";
 import netWorthRoutes from "./routes/netWorth.routes";
+import milestoneRoutes from "./routes/milestone.routes";
+import spendingInsightsRoutes from "./routes/spendingInsights.routes";
 
 const app = express();
 
@@ -47,6 +49,8 @@ app.use("/api/lifestyle-inflation", lifestyleInflationRoutes);
 app.use("/api/monthly-plan", monthlyPlanRoutes);
 app.use("/api/monthly-review", monthlyReviewRoutes);
 app.use("/api/net-worth", netWorthRoutes);
+app.use("/api/milestones", milestoneRoutes);
+app.use("/api/spending-insights", spendingInsightsRoutes);
 
 app.use(errorHandler);
 

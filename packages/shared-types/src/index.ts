@@ -13,3 +13,5 @@ export * from "./lifestyleInflation";
 export * from "./monthlyPlan";
 export * from "./monthlyReview";
 export * from "./netWorth";
+export * from "./milestone";
+export * from "./spendingInsights";

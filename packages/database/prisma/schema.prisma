@@ -33,7 +33,6 @@ model User {
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
   netWorthSnapshots NetWorthSnapshot[]
-
   salaryProfiles   SalaryProfile[]
   transactions     Transaction[]
   categories       Category[]
@@ -45,6 +44,7 @@ model User {
   insurancePolicies InsurancePolicy[]
   emergencyFund    EmergencyFund?
   monthlyPlans     MonthlyPlan[]
+  milestoneAchievements MilestoneAchievement[]
 }
 
 model SalaryProfile {
@@ -316,4 +316,26 @@ model NetWorthSnapshot {
   snapshotDate      DateTime @default(now())
 
   createdAt         DateTime @default(now())
+}
+
+enum MilestoneKey {
+  SAVED_50K
+  SAVED_1L
+  INVESTED_1L
+  EMERGENCY_FUND_3_MONTHS
+  EMERGENCY_FUND_6_MONTHS
+  DEBT_FREE
+  FIRST_GOAL_COMPLETED
+  NET_WORTH_POSITIVE
+}
+
+model MilestoneAchievement {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  key         MilestoneKey
+  achievedAt  DateTime     @default(now())
+
+  @@unique([userId, key])
 }
