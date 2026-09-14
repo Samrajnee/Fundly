@@ -35,7 +35,7 @@ export default function AskFundlyPage() {
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
       <h1>Ask Fundly</h1>
-      <p>Ask about your own finances — "Can I afford this?", "Why did I overspend?", "How much should I save for my trip?"</p>
+      <p>Ask about your own finances - "Can I afford this?", "Why did I overspend?", "How much should I save for my trip?"</p>
 
       <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
         {messages.map((m, idx) => (

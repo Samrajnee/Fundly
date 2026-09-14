@@ -20,3 +20,6 @@ export * from "./profile";
 export * from "./education";
 export * from "./aiExpense";
 export * from "./aiAssistant";
+export * from "./aiMonthlyReview";
+export * from "./aiGoalPlanner";
+export * from "./aiWhatIf";

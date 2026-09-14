@@ -34,6 +34,9 @@ import profileRoutes from "./routes/profile.routes";
 import educationRoutes from "./routes/education.routes";
 import aiExpenseRoutes from "./routes/aiExpense.routes";
 import aiAssistantRoutes from "./routes/aiAssistant.routes";
+import aiMonthlyReviewRoutes from "./routes/aiMonthlyReview.routes";
+import aiGoalPlannerRoutes from "./routes/aiGoalPlanner.routes";
+import aiWhatIfRoutes from "./routes/aiWhatIf.routes";
 
 const app = express();
 
@@ -72,6 +75,9 @@ app.use("/api/profile", requireAuth, profileRoutes);
 app.use("/api/education", educationRoutes);
 app.use("/api/ai/expense", requireAuth, aiExpenseRoutes);
 app.use("/api/ai/assistant", requireAuth, aiAssistantRoutes);
+app.use("/api/ai/monthly-review", requireAuth, aiMonthlyReviewRoutes);
+app.use("/api/ai/goal-planner", requireAuth, aiGoalPlannerRoutes);
+app.use("/api/ai/what-if", requireAuth, aiWhatIfRoutes);
 
 app.use(errorHandler);
 

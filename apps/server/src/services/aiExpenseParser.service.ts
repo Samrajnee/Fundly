@@ -59,7 +59,7 @@ Pick suggestedCategoryName from the available categories list exactly as written
     throw new AppError("Could not parse expense from that text. Try rephrasing.", 422);
   }
 
-  // Validate the date is a real, parseable date — reject garbage before it hits the DB.
+  // Validate the date is a real, parseable date - reject garbage before it hits the DB.
   const parsedDate = new Date(parsed.data.date);
   if (Number.isNaN(parsedDate.getTime())) {
     throw new AppError("Could not determine a valid date from that text.", 422);
