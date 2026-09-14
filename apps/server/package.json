@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "@fundly/database": "workspace:^",
     "@fundly/shared-types": "workspace:^",
     "bcryptjs": "^3.0.3",

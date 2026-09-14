@@ -3,7 +3,6 @@ export interface SalaryPlannerInput {
   livingSituation: "WITH_PARENTS" | "RENTING_ALONE" | "RENTING_SHARED" | "OWN_HOME";
   supportsFamily: boolean;
   fixedExpenses: number;
-  existingSavingsGoalPercent?: number;
 }
 
 export interface SalaryBreakdown {
@@ -13,4 +12,9 @@ export interface SalaryBreakdown {
   investmentsAmount: number;
   goalsAmount: number;
   bufferAmount: number;
+}
+
+export interface SalaryBreakdownWithReasoning extends SalaryBreakdown {
+  reasoning: string;
+  source: "AI" | "RULE_BASED";
 }

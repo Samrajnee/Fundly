@@ -24,14 +24,17 @@ export default function DashboardPage() {
       );
   }, []);
 
-  if (error)
+  if (error) {
     return (
       <main style={{ padding: "2rem" }}>
         <p style={{ color: "red" }}>{error}</p>
       </main>
     );
+  }
 
-  if (!data) return <main style={{ padding: "2rem" }}>Loading...</main>;
+  if (!data) {
+    return <main style={{ padding: "2rem" }}>Loading...</main>;
+  }
 
   if (!data.hasActiveSalaryPlan) {
     return (
@@ -55,7 +58,9 @@ export default function DashboardPage() {
         </div>
 
         <h1>Welcome to Fundly</h1>
-        <p>Start by creating your Salary Plan to unlock your dashboard.</p>
+        <p>
+          Start by creating your Salary Plan to unlock your dashboard.
+        </p>
         <Link href="/salary-planner">Go to Salary Planner →</Link>
       </main>
     );
@@ -71,6 +76,7 @@ export default function DashboardPage() {
         }}
       >
         <p>Welcome, {user?.name}</p>
+
         <button
           onClick={async () => {
             await logout();
@@ -117,7 +123,9 @@ export default function DashboardPage() {
             <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
               ₹{data.safeToSpend.dailySafeAmount}
             </div>
-            <small>{data.safeToSpend.daysLeftInMonth} days left this month</small>
+            <small>
+              {data.safeToSpend.daysLeftInMonth} days left this month
+            </small>
           </div>
         )}
 
@@ -134,7 +142,8 @@ export default function DashboardPage() {
 
       {data.breakdown && (
         <div style={{ marginTop: "1.5rem" }}>
-          <h2>Salary Breakdown</h2>
+          <h2>Your Monthly Breakdown</h2>
+
           <ul>
             <li>Necessities: ₹{data.breakdown.necessitiesAmount}</li>
             <li>Lifestyle: ₹{data.breakdown.lifestyleAmount}</li>
@@ -208,9 +217,10 @@ export default function DashboardPage() {
         <p>{data.recentMilestonesCount} of 8 milestones unlocked</p>
         <Link href="/milestones">View all →</Link>
       </div>
+
+      <div style={{ marginTop: "1.5rem" }}>
+        <Link href="/education">Financial Education →</Link>
+      </div>
     </main>
   );
-  <div style={{ marginTop: "1.5rem" }}>
-  <Link href="/education">📚 Financial Education →</Link>
-</div>
 }

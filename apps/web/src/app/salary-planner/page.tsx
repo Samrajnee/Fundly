@@ -16,8 +16,13 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+interface SalaryPlanResult extends SalaryBreakdown {
+  reasoning?: string;
+  source?: string;
+}
+
 export default function SalaryPlannerPage() {
-  const [result, setResult] = useState<SalaryBreakdown | null>(null);
+  const [result, setResult] = useState<SalaryPlanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +41,7 @@ export default function SalaryPlannerPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiPost<SalaryBreakdown>("/salary", values);
+      const data = await apiPost<SalaryPlanResult>("/salary", values);
       setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -53,7 +58,8 @@ export default function SalaryPlannerPage() {
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <label>
           Monthly Salary (₹)
-            <input type="number" {...register("monthlySalary", { valueAsNumber: true })} />          {errors.monthlySalary && <p style={{ color: "red" }}>{errors.monthlySalary.message}</p>}
+          <input type="number" {...register("monthlySalary", { valueAsNumber: true })} />
+          {errors.monthlySalary && <p style={{ color: "red" }}>{errors.monthlySalary.message}</p>}
         </label>
 
         <label>
@@ -73,7 +79,8 @@ export default function SalaryPlannerPage() {
 
         <label>
           Fixed Monthly Expenses (₹)
-            <input type="number" {...register("fixedExpenses", { valueAsNumber: true })} />          {errors.fixedExpenses && <p style={{ color: "red" }}>{errors.fixedExpenses.message}</p>}
+          <input type="number" {...register("fixedExpenses", { valueAsNumber: true })} />
+          {errors.fixedExpenses && <p style={{ color: "red" }}>{errors.fixedExpenses.message}</p>}
         </label>
 
         <button type="submit" disabled={loading}>
@@ -86,6 +93,18 @@ export default function SalaryPlannerPage() {
       {result && (
         <div style={{ marginTop: "2rem" }}>
           <h2>Your Monthly Breakdown</h2>
+
+          {result.reasoning && (
+            <div style={{ background: "#f5f5f5", padding: "0.75rem", marginBottom: "1rem", fontSize: "0.9rem" }}>
+              💡 {result.reasoning}
+              {result.source === "RULE_BASED" && (
+                <span style={{ display: "block", color: "#999", marginTop: "0.25rem" }}>
+                  (Standard allocation — AI temporarily unavailable)
+                </span>
+              )}
+            </div>
+          )}
+
           <ul>
             <li>Necessities: ₹{result.necessitiesAmount}</li>
             <li>Lifestyle: ₹{result.lifestyleAmount}</li>

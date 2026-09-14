@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 import { salaryPlannerInputSchema } from "../validators/salary.validator";
-import { calculateSalaryBreakdown } from "../services/salaryAllocation.service";
+import { generateAiSalaryBreakdown } from "../services/aiSalaryAllocation.service";
 import { AppError } from "../middlewares/errorHandler";
 
 export async function createSalaryPlan(req: Request, res: Response, next: NextFunction) {
@@ -16,9 +16,27 @@ export async function createSalaryPlan(req: Request, res: Response, next: NextFu
       throw new AppError("User not found", 404);
     }
 
-    const breakdown = calculateSalaryBreakdown({ ...parsed.data, incomeType: user.incomeType });
+    const [debts, goalsCount, emergencyFund] = await Promise.all([
+      prisma.debt.findMany({ where: { userId: req.userId! } }),
+      prisma.goal.count({ where: { userId: req.userId!, status: "ACTIVE" } }),
+      prisma.emergencyFund.findUnique({ where: { userId: req.userId! } }),
+    ]);
 
-    const profile = await prisma.salaryProfile.updateMany({
+    const existingDebtEmiTotal = debts.reduce((sum, d) => sum + Number(d.emiAmount), 0);
+
+    const breakdown = await generateAiSalaryBreakdown({
+      monthlySalary: parsed.data.monthlySalary,
+      livingSituation: parsed.data.livingSituation,
+      supportsFamily: parsed.data.supportsFamily,
+      fixedExpenses: parsed.data.fixedExpenses,
+      incomeType: user.incomeType,
+      existingDebtEmiTotal,
+      existingGoalsCount: goalsCount,
+      hasEmergencyFund: !!emergencyFund && Number(emergencyFund.currentAmount) > 0,
+      isFirstSalary: user.isFirstSalary,
+    });
+
+    await prisma.salaryProfile.updateMany({
       where: { userId: req.userId!, isActive: true },
       data: { isActive: false },
     });
@@ -39,7 +57,10 @@ export async function createSalaryPlan(req: Request, res: Response, next: NextFu
       },
     });
 
-    res.status(201).json({ success: true, data: saved });
+    res.status(201).json({
+      success: true,
+      data: { ...saved, reasoning: breakdown.reasoning, source: breakdown.source },
+    });
   } catch (err) {
     next(err);
   }
