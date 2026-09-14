@@ -18,3 +18,5 @@ export * from "./spendingInsights";
 export * from "./dashboard";
 export * from "./profile";
 export * from "./education";
+export * from "./aiExpense";
+export * from "./aiAssistant";

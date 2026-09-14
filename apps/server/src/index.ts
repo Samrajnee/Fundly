@@ -32,6 +32,8 @@ import spendingInsightsRoutes from "./routes/spendingInsights.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 import profileRoutes from "./routes/profile.routes";
 import educationRoutes from "./routes/education.routes";
+import aiExpenseRoutes from "./routes/aiExpense.routes";
+import aiAssistantRoutes from "./routes/aiAssistant.routes";
 
 const app = express();
 
@@ -68,6 +70,8 @@ app.use("/api/spending-insights", requireAuth, spendingInsightsRoutes);
 app.use("/api/dashboard", requireAuth, dashboardRoutes);
 app.use("/api/profile", requireAuth, profileRoutes);
 app.use("/api/education", educationRoutes);
+app.use("/api/ai/expense", requireAuth, aiExpenseRoutes);
+app.use("/api/ai/assistant", requireAuth, aiAssistantRoutes);
 
 app.use(errorHandler);
 
