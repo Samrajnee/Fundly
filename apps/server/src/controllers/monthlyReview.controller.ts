@@ -2,16 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
 
-export async function getMonthlyReview(_req: Request, res: Response, next: NextFunction) {
+
+export async function getMonthlyReview(req: Request, res: Response, next: NextFunction) {
   try {
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
     const plan = await prisma.monthlyPlan.findUnique({
-      where: { userId_month_year: { userId: TEMP_USER_ID, month, year } },
+      where: { userId_month_year: { userId: req.userId!, month, year } },
     });
 
     if (!plan) {
@@ -23,12 +23,12 @@ export async function getMonthlyReview(_req: Request, res: Response, next: NextF
 
     const spendByType = await prisma.transaction.groupBy({
       by: ["categoryId"],
-      where: { userId: TEMP_USER_ID, date: { gte: start, lt: end } },
+      where: { userId: req.userId!, date: { gte: start, lt: end } },
       _sum: { amount: true },
     });
 
     // Map categoryId -> type, then aggregate by type
-    const categories = await prisma.category.findMany({ where: { userId: TEMP_USER_ID } });
+    const categories = await prisma.category.findMany({ where: { userId: req.userId! } });
     const categoryTypeMap = new Map(categories.map((c) => [c.id, c.type]));
 
     const actualByType: Record<string, number> = {

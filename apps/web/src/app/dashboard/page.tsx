@@ -2,25 +2,58 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import type { DashboardDTO } from "@fundly/shared-types";
+import { useAuth } from "@/lib/auth-context";
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
   useEffect(() => {
     apiGet<DashboardDTO>("/dashboard")
       .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load dashboard"));
+      .catch((err) =>
+        setError(
+          err instanceof Error ? err.message : "Failed to load dashboard"
+        )
+      );
   }, []);
 
-  if (error) return <main style={{ padding: "2rem" }}><p style={{ color: "red" }}>{error}</p></main>;
+  if (error)
+    return (
+      <main style={{ padding: "2rem" }}>
+        <p style={{ color: "red" }}>{error}</p>
+      </main>
+    );
+
   if (!data) return <main style={{ padding: "2rem" }}>Loading...</main>;
 
   if (!data.hasActiveSalaryPlan) {
     return (
       <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <p>Welcome, {user?.name}</p>
+          <button
+            onClick={async () => {
+              await logout();
+              router.push("/login");
+            }}
+          >
+            Log Out
+          </button>
+        </div>
+
         <h1>Welcome to Fundly</h1>
         <p>Start by creating your Salary Plan to unlock your dashboard.</p>
         <Link href="/salary-planner">Go to Salary Planner →</Link>
@@ -30,17 +63,50 @@ export default function DashboardPage() {
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <p>Welcome, {user?.name}</p>
+        <button
+          onClick={async () => {
+            await logout();
+            router.push("/login");
+          }}
+        >
+          Log Out
+        </button>
+      </div>
+
       <h1>Dashboard</h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "1.5rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "1rem",
+          marginTop: "1.5rem",
+        }}
+      >
         <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
           <small>Monthly Salary</small>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>₹{data.monthlySalary}</div>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            ₹{data.monthlySalary}
+          </div>
         </div>
 
         <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
           <small>Net Worth</small>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: data.netWorth >= 0 ? "#3a3" : "#d33" }}>
+          <div
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+              color: data.netWorth >= 0 ? "#3a3" : "#d33",
+            }}
+          >
             ₹{data.netWorth}
           </div>
         </div>
@@ -48,7 +114,9 @@ export default function DashboardPage() {
         {data.safeToSpend && (
           <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
             <small>Safe to Spend Today</small>
-            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>₹{data.safeToSpend.dailySafeAmount}</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+              ₹{data.safeToSpend.dailySafeAmount}
+            </div>
             <small>{data.safeToSpend.daysLeftInMonth} days left this month</small>
           </div>
         )}
@@ -80,24 +148,50 @@ export default function DashboardPage() {
 
       <div style={{ marginTop: "1.5rem" }}>
         <h2>Active Goals ({data.activeGoalsCount})</h2>
+
         {data.goalsSummary.length === 0 ? (
-          <p>No active goals. <Link href="/goals">Create one →</Link></p>
+          <p>
+            No active goals. <Link href="/goals">Create one →</Link>
+          </p>
         ) : (
           data.goalsSummary.map((g) => {
-            const percent = Math.round((g.currentAmount / g.targetAmount) * 100);
+            const percent = Math.round(
+              (g.currentAmount / g.targetAmount) * 100
+            );
+
             return (
               <div key={g.id} style={{ marginBottom: "0.75rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <span>{g.name}</span>
                   <span>{percent}%</span>
                 </div>
-                <div style={{ background: "#eee", height: "6px", borderRadius: "3px", overflow: "hidden" }}>
-                  <div style={{ width: `${Math.min(percent, 100)}%`, background: "#3a3", height: "100%" }} />
+
+                <div
+                  style={{
+                    background: "#eee",
+                    height: "6px",
+                    borderRadius: "3px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${Math.min(percent, 100)}%`,
+                      background: "#3a3",
+                      height: "100%",
+                    }}
+                  />
                 </div>
               </div>
             );
           })
         )}
+
         <Link href="/goals">View all goals →</Link>
       </div>
 

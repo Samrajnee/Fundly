@@ -2,21 +2,21 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
 
-export async function getOrCreateMonthlyPlan(_req: Request, res: Response, next: NextFunction) {
+
+export async function getOrCreateMonthlyPlan(req: Request, res: Response, next: NextFunction) {
   try {
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
     let plan = await prisma.monthlyPlan.findUnique({
-      where: { userId_month_year: { userId: TEMP_USER_ID, month, year } },
+      where: { userId_month_year: { userId: req.userId!, month, year } },
     });
 
     if (!plan) {
       const activePlan = await prisma.salaryProfile.findFirst({
-        where: { userId: TEMP_USER_ID, isActive: true },
+        where: { userId: req.userId!, isActive: true },
         orderBy: { createdAt: "desc" },
       });
 
@@ -26,7 +26,7 @@ export async function getOrCreateMonthlyPlan(_req: Request, res: Response, next:
 
       plan = await prisma.monthlyPlan.create({
         data: {
-          userId: TEMP_USER_ID,
+          userId: req.userId!,
           month,
           year,
           necessitiesTarget: activePlan.necessitiesAmount,
@@ -45,10 +45,10 @@ export async function getOrCreateMonthlyPlan(_req: Request, res: Response, next:
   }
 }
 
-export async function listMonthlyPlans(_req: Request, res: Response, next: NextFunction) {
+export async function listMonthlyPlans(req: Request, res: Response, next: NextFunction) {
   try {
     const plans = await prisma.monthlyPlan.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       orderBy: [{ year: "desc" }, { month: "desc" }],
       take: 12,
     });

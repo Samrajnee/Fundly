@@ -4,7 +4,7 @@ import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 import { calculateSalaryBreakdown } from "../services/salaryAllocation.service";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const incrementSchema = z.object({
   newMonthlySalary: z.number().positive(),
@@ -18,7 +18,7 @@ export async function simulateSalaryIncrement(req: Request, res: Response, next:
     }
 
     const activePlan = await prisma.salaryProfile.findFirst({
-      where: { userId: TEMP_USER_ID, isActive: true },
+      where: { userId: req.userId!, isActive: true },
       orderBy: { createdAt: "desc" },
     });
 

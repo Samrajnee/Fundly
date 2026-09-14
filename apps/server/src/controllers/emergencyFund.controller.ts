@@ -3,17 +3,17 @@ import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const updateSchema = z.object({
   targetMonths: z.number().min(1).max(24).optional(),
   contributionAmount: z.number().positive().optional(),
 });
 
-export async function getEmergencyFund(_req: Request, res: Response, next: NextFunction) {
+export async function getEmergencyFund(req: Request, res: Response, next: NextFunction) {
   try {
     const activePlan = await prisma.salaryProfile.findFirst({
-      where: { userId: TEMP_USER_ID, isActive: true },
+      where: { userId: req.userId!, isActive: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -21,10 +21,10 @@ export async function getEmergencyFund(_req: Request, res: Response, next: NextF
       throw new AppError("No active salary plan found. Create one first.", 404);
     }
 
-    let fund = await prisma.emergencyFund.findUnique({ where: { userId: TEMP_USER_ID } });
+    let fund = await prisma.emergencyFund.findUnique({ where: { userId: req.userId! } });
     if (!fund) {
       fund = await prisma.emergencyFund.create({
-        data: { userId: TEMP_USER_ID, targetMonths: 6, currentAmount: 0 },
+        data: { userId: req.userId!, targetMonths: 6, currentAmount: 0 },
       });
     }
 
@@ -56,15 +56,15 @@ export async function updateEmergencyFund(req: Request, res: Response, next: Nex
       throw new AppError(parsed.error.issues[0].message, 422);
     }
 
-    let fund = await prisma.emergencyFund.findUnique({ where: { userId: TEMP_USER_ID } });
+    let fund = await prisma.emergencyFund.findUnique({ where: { userId: req.userId! } });
     if (!fund) {
       fund = await prisma.emergencyFund.create({
-        data: { userId: TEMP_USER_ID, targetMonths: 6, currentAmount: 0 },
+        data: { userId: req.userId!, targetMonths: 6, currentAmount: 0 },
       });
     }
 
     const updated = await prisma.emergencyFund.update({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       data: {
         targetMonths: parsed.data.targetMonths ?? fund.targetMonths,
         currentAmount: parsed.data.contributionAmount

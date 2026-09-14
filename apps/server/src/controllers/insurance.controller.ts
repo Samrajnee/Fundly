@@ -3,7 +3,7 @@ import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const createInsuranceSchema = z.object({
   type: z.enum(["HEALTH", "LIFE", "VEHICLE", "HOME", "OTHER"]),
@@ -24,7 +24,7 @@ export async function createInsurance(req: Request, res: Response, next: NextFun
 
     const policy = await prisma.insurancePolicy.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         ...parsed.data,
         expiryDate: new Date(parsed.data.expiryDate),
       },
@@ -36,10 +36,10 @@ export async function createInsurance(req: Request, res: Response, next: NextFun
   }
 }
 
-export async function listInsurance(_req: Request, res: Response, next: NextFunction) {
+export async function listInsurance(req: Request, res: Response, next: NextFunction) {
   try {
     const policies = await prisma.insurancePolicy.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       orderBy: { expiryDate: "asc" },
     });
 

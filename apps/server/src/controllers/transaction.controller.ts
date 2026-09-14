@@ -3,7 +3,7 @@ import { prisma } from "@fundly/database";
 import { createTransactionSchema, listTransactionsQuerySchema } from "../validators/transaction.validator";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 export async function createTransaction(req: Request, res: Response, next: NextFunction) {
   try {
@@ -14,7 +14,7 @@ export async function createTransaction(req: Request, res: Response, next: NextF
 
     const transaction = await prisma.transaction.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         categoryId: parsed.data.categoryId,
         amount: parsed.data.amount,
         merchant: parsed.data.merchant,
@@ -39,7 +39,7 @@ export async function listTransactions(req: Request, res: Response, next: NextFu
     }
 
     const { month, year, categoryId } = parsed.data;
-    const where: Record<string, unknown> = { userId: TEMP_USER_ID };
+    const where: Record<string, unknown> = { userId: req.userId! };
 
     if (categoryId) where.categoryId = categoryId;
 

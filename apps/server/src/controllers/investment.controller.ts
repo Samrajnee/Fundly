@@ -3,7 +3,7 @@ import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const createInvestmentSchema = z.object({
   type: z.enum(["MUTUAL_FUND", "FIXED_DEPOSIT", "PPF", "EPF", "NPS", "STOCKS", "OTHER"]),
@@ -23,7 +23,7 @@ export async function createInvestment(req: Request, res: Response, next: NextFu
 
     const investment = await prisma.investment.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         ...parsed.data,
         startDate: new Date(parsed.data.startDate),
       },
@@ -35,10 +35,10 @@ export async function createInvestment(req: Request, res: Response, next: NextFu
   }
 }
 
-export async function listInvestments(_req: Request, res: Response, next: NextFunction) {
+export async function listInvestments(req: Request, res: Response, next: NextFunction) {
   try {
     const investments = await prisma.investment.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       orderBy: { startDate: "desc" },
     });
 

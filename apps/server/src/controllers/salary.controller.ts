@@ -5,7 +5,7 @@ import { calculateSalaryBreakdown } from "../services/salaryAllocation.service";
 import { AppError } from "../middlewares/errorHandler";
 
 // TEMPORARY: hardcoded until auth is built in a later phase
-const TEMP_USER_ID = "temp-user-id";
+
 
 export async function createSalaryPlan(req: Request, res: Response, next: NextFunction) {
   try {
@@ -17,13 +17,13 @@ export async function createSalaryPlan(req: Request, res: Response, next: NextFu
     const breakdown = calculateSalaryBreakdown(parsed.data);
 
     const profile = await prisma.salaryProfile.updateMany({
-      where: { userId: TEMP_USER_ID, isActive: true },
+      where: { userId: req.userId!, isActive: true },
       data: { isActive: false },
     });
 
     const saved = await prisma.salaryProfile.create({
   data: {
-    userId: TEMP_USER_ID,
+    userId: req.userId!,
     monthlySalary: parsed.data.monthlySalary,
     livingSituation: parsed.data.livingSituation,
     supportsFamily: parsed.data.supportsFamily,
@@ -46,7 +46,7 @@ export async function createSalaryPlan(req: Request, res: Response, next: NextFu
 export async function getActiveSalaryPlan(req: Request, res: Response, next: NextFunction) {
   try {
     const profile = await prisma.salaryProfile.findFirst({
-      where: { userId: TEMP_USER_ID, isActive: true },
+      where: { userId: req.userId!, isActive: true },
       orderBy: { createdAt: "desc" },
     });
 

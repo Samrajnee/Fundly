@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 
-const TEMP_USER_ID = "temp-user-id";
 
-export async function getSpendingInsights(_req: Request, res: Response, next: NextFunction) {
+
+export async function getSpendingInsights(req: Request, res: Response, next: NextFunction) {
   try {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -11,7 +11,7 @@ export async function getSpendingInsights(_req: Request, res: Response, next: Ne
 
     // Top categories this month
     const currentMonthTxns = await prisma.transaction.findMany({
-      where: { userId: TEMP_USER_ID, date: { gte: start, lt: end } },
+      where: { userId: req.userId!, date: { gte: start, lt: end } },
       include: { category: true },
     });
 
@@ -36,7 +36,7 @@ export async function getSpendingInsights(_req: Request, res: Response, next: Ne
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
     const trendTxns = await prisma.transaction.findMany({
-      where: { userId: TEMP_USER_ID, date: { gte: sixMonthsAgo } },
+      where: { userId: req.userId!, date: { gte: sixMonthsAgo } },
       select: { amount: true, date: true },
     });
 

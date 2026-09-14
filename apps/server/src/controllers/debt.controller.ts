@@ -3,7 +3,7 @@ import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const createDebtSchema = z.object({
   type: z.enum(["CREDIT_CARD", "PERSONAL_LOAN", "HOME_LOAN", "VEHICLE_LOAN", "EDUCATION_LOAN", "OTHER"]),
@@ -25,7 +25,7 @@ export async function createDebt(req: Request, res: Response, next: NextFunction
 
     const debt = await prisma.debt.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         ...parsed.data,
         startDate: new Date(parsed.data.startDate),
       },
@@ -37,10 +37,10 @@ export async function createDebt(req: Request, res: Response, next: NextFunction
   }
 }
 
-export async function listDebts(_req: Request, res: Response, next: NextFunction) {
+export async function listDebts(req: Request, res: Response, next: NextFunction) {
   try {
     const debts = await prisma.debt.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       orderBy: { startDate: "desc" },
     });
 

@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const defaultCategories = [
   { name: "Rent", type: "NECESSITY" as const },
@@ -22,10 +22,10 @@ const defaultCategories = [
 
 async function main() {
   await prisma.user.upsert({
-    where: { id: TEMP_USER_ID },
+    where: { id: req.userId! },
     update: {},
     create: {
-      id: TEMP_USER_ID,
+      id: req.userId!,
       email: "test@fundly.dev",
       name: "Test User",
       passwordHash: "placeholder",
@@ -34,10 +34,10 @@ async function main() {
 
   for (const cat of defaultCategories) {
     await prisma.category.upsert({
-      where: { userId_name: { userId: TEMP_USER_ID, name: cat.name } },
+      where: { userId_name: { userId: req.userId!, name: cat.name } },
       update: {},
       create: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         name: cat.name,
         type: cat.type,
         isDefault: true,

@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 
-const TEMP_USER_ID = "temp-user-id";
 
-export async function getLifestyleInflation(_req: Request, res: Response, next: NextFunction) {
+
+export async function getLifestyleInflation(req: Request, res: Response, next: NextFunction) {
   try {
     // Salary growth: compare the two most recent Salary Plans (current + previous).
     const salaryProfiles = await prisma.salaryProfile.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       orderBy: { createdAt: "desc" },
       take: 2,
     });
@@ -28,7 +28,7 @@ export async function getLifestyleInflation(_req: Request, res: Response, next: 
 
     const transactions = await prisma.transaction.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         date: { gte: sixMonthsAgo },
         category: { type: "LIFESTYLE" },
       },

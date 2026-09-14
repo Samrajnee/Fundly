@@ -4,7 +4,7 @@ import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 import { calculateMonthlyRequired } from "../services/goal.service";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const createGoalSchema = z.object({
   name: z.string().min(1),
@@ -28,7 +28,7 @@ export async function createGoal(req: Request, res: Response, next: NextFunction
 
     const goal = await prisma.goal.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         name: parsed.data.name,
         targetAmount: parsed.data.targetAmount,
         targetDate,
@@ -44,10 +44,10 @@ export async function createGoal(req: Request, res: Response, next: NextFunction
   }
 }
 
-export async function listGoals(_req: Request, res: Response, next: NextFunction) {
+export async function listGoals(req: Request, res: Response, next: NextFunction) {
   try {
     const goals = await prisma.goal.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       orderBy: { targetDate: "asc" },
     });
     res.json({ success: true, data: goals });

@@ -2,10 +2,14 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 
 import { env } from "./config/env";
 import { errorHandler } from "./middlewares/errorHandler";
+import { requireAuth } from "./middlewares/requireAuth";
+
 import healthRoutes from "./routes/health.routes";
+import authRoutes from "./routes/auth.routes";
 import salaryRoutes from "./routes/salary.routes";
 import transactionRoutes from "./routes/transaction.routes";
 import categoryRoutes from "./routes/category.routes";
@@ -32,27 +36,34 @@ const app = express();
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan("dev"));
 
+// Public routes
 app.use("/api/health", healthRoutes);
-app.use("/api/salary", salaryRoutes);
-app.use("/api/transactions", transactionRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/recurring", recurringRoutes);
-app.use("/api/goals", goalRoutes); 
-app.use("/api/investments", investmentRoutes);
-app.use("/api/debts", debtRoutes);
-app.use("/api/insurance", insuranceRoutes);
-app.use("/api/health-score", healthScoreRoutes);
-app.use("/api/emergency-fund", emergencyFundRoutes);
-app.use("/api/salary-increment", salaryIncrementRoutes);
-app.use("/api/lifestyle-inflation", lifestyleInflationRoutes);
-app.use("/api/monthly-plan", monthlyPlanRoutes);
-app.use("/api/monthly-review", monthlyReviewRoutes);
-app.use("/api/net-worth", netWorthRoutes);
-app.use("/api/milestones", milestoneRoutes);
-app.use("/api/spending-insights", spendingInsightsRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/auth", authRoutes);
+
+// Protected routes — every one of these now requires a valid session
+app.use("/api/salary", requireAuth, salaryRoutes);
+app.use("/api/transactions", requireAuth, transactionRoutes);
+app.use("/api/categories", requireAuth, categoryRoutes);
+app.use("/api/budgets", requireAuth, budgetRoutes);
+app.use("/api/safe-to-spend", requireAuth, safeToSpendRoutes);
+app.use("/api/recurring", requireAuth, recurringRoutes);
+app.use("/api/goals", requireAuth, goalRoutes);
+app.use("/api/investments", requireAuth, investmentRoutes);
+app.use("/api/debts", requireAuth, debtRoutes);
+app.use("/api/insurance", requireAuth, insuranceRoutes);
+app.use("/api/health-score", requireAuth, healthScoreRoutes);
+app.use("/api/emergency-fund", requireAuth, emergencyFundRoutes);
+app.use("/api/salary-increment", requireAuth, salaryIncrementRoutes);
+app.use("/api/lifestyle-inflation", requireAuth, lifestyleInflationRoutes);
+app.use("/api/monthly-plan", requireAuth, monthlyPlanRoutes);
+app.use("/api/monthly-review", requireAuth, monthlyReviewRoutes);
+app.use("/api/net-worth", requireAuth, netWorthRoutes);
+app.use("/api/milestones", requireAuth, milestoneRoutes);
+app.use("/api/spending-insights", requireAuth, spendingInsightsRoutes);
+app.use("/api/dashboard", requireAuth, dashboardRoutes);
 
 app.use(errorHandler);
 

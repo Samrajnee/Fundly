@@ -1,27 +1,27 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 
-const TEMP_USER_ID = "temp-user-id";
 
-export async function getNetWorth(_req: Request, res: Response, next: NextFunction) {
+
+export async function getNetWorth(req: Request, res: Response, next: NextFunction) {
   try {
-    const investments = await prisma.investment.findMany({ where: { userId: TEMP_USER_ID } });
+    const investments = await prisma.investment.findMany({ where: { userId: req.userId! } });
     const totalInvestments = investments.reduce((sum, i) => sum + Number(i.currentValue), 0);
 
-    const emergencyFund = await prisma.emergencyFund.findUnique({ where: { userId: TEMP_USER_ID } });
+    const emergencyFund = await prisma.emergencyFund.findUnique({ where: { userId: req.userId! } });
     const emergencyFundAmount = emergencyFund ? Number(emergencyFund.currentAmount) : 0;
 
-    const goals = await prisma.goal.findMany({ where: { userId: TEMP_USER_ID, status: "ACTIVE" } });
+    const goals = await prisma.goal.findMany({ where: { userId: req.userId!, status: "ACTIVE" } });
     const otherSavings = goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
 
-    const debts = await prisma.debt.findMany({ where: { userId: TEMP_USER_ID } });
+    const debts = await prisma.debt.findMany({ where: { userId: req.userId! } });
     const totalDebt = debts.reduce((sum, d) => sum + Number(d.outstandingAmount), 0);
 
     const totalAssets = totalInvestments + emergencyFundAmount + otherSavings;
     const netWorth = totalAssets - totalDebt;
 
     const history = await prisma.netWorthSnapshot.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       orderBy: { snapshotDate: "asc" },
       take: 24,
     });
@@ -46,18 +46,18 @@ export async function getNetWorth(_req: Request, res: Response, next: NextFuncti
   }
 }
 
-export async function createNetWorthSnapshot(_req: Request, res: Response, next: NextFunction) {
+export async function createNetWorthSnapshot(req: Request, res: Response, next: NextFunction) {
   try {
-    const investments = await prisma.investment.findMany({ where: { userId: TEMP_USER_ID } });
+    const investments = await prisma.investment.findMany({ where: { userId: req.userId! } });
     const totalInvestments = investments.reduce((sum, i) => sum + Number(i.currentValue), 0);
 
-    const emergencyFund = await prisma.emergencyFund.findUnique({ where: { userId: TEMP_USER_ID } });
+    const emergencyFund = await prisma.emergencyFund.findUnique({ where: { userId: req.userId! } });
     const emergencyFundAmount = emergencyFund ? Number(emergencyFund.currentAmount) : 0;
 
-    const goals = await prisma.goal.findMany({ where: { userId: TEMP_USER_ID, status: "ACTIVE" } });
+    const goals = await prisma.goal.findMany({ where: { userId: req.userId!, status: "ACTIVE" } });
     const otherSavings = goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
 
-    const debts = await prisma.debt.findMany({ where: { userId: TEMP_USER_ID } });
+    const debts = await prisma.debt.findMany({ where: { userId: req.userId! } });
     const totalDebt = debts.reduce((sum, d) => sum + Number(d.outstandingAmount), 0);
 
     const totalAssets = totalInvestments + emergencyFundAmount + otherSavings;
@@ -65,7 +65,7 @@ export async function createNetWorthSnapshot(_req: Request, res: Response, next:
 
     const snapshot = await prisma.netWorthSnapshot.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         totalAssets,
         totalLiabilities: totalDebt,
         netWorth,

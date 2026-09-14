@@ -7,20 +7,23 @@ export function calculateSalaryBreakdown(input: SalaryPlannerInput): SalaryBreak
   let lifestylePct = 0.2;
   let savingsPct = 0.15;
   let investmentsPct = 0.1;
-  let goalsPct = 0.05;
+  let goalsPct = 0.03;
+  let bufferPct = 0.02;
 
   if (livingSituation === "RENTING_ALONE") {
     necessitiesPct = 0.55;
     lifestylePct = 0.15;
     savingsPct = 0.15;
     investmentsPct = 0.1;
-    goalsPct = 0.05;
+    goalsPct = 0.03;
+    bufferPct = 0.02;
   } else if (livingSituation === "WITH_PARENTS") {
     necessitiesPct = 0.3;
     lifestylePct = 0.25;
     savingsPct = 0.2;
     investmentsPct = 0.15;
-    goalsPct = 0.1;
+    goalsPct = 0.07;
+    bufferPct = 0.03;
   }
 
   if (supportsFamily) {
@@ -32,19 +35,17 @@ export function calculateSalaryBreakdown(input: SalaryPlannerInput): SalaryBreak
   const plannedNecessities = monthlySalary * necessitiesPct;
   const necessitiesAmount = Math.max(plannedNecessities, fixedExpenses);
 
-  // Whatever's left after necessities gets split across the remaining categories,
-  // proportionally to their original weights. This guarantees the total never
-  // exceeds salary, even when fixedExpenses pushed necessities above its planned share.
+  // Whatever's left after necessities gets split across lifestyle, savings,
+  // investments, goals, AND buffer — proportionally to their original weights.
+  // Buffer now gets a real reserved slice instead of being pure rounding leftover.
   const remaining = Math.max(monthlySalary - necessitiesAmount, 0);
-  const remainingWeightSum = lifestylePct + savingsPct + investmentsPct + goalsPct;
+  const remainingWeightSum = lifestylePct + savingsPct + investmentsPct + goalsPct + bufferPct;
 
   const lifestyleAmount = remainingWeightSum > 0 ? remaining * (lifestylePct / remainingWeightSum) : 0;
   const savingsAmount = remainingWeightSum > 0 ? remaining * (savingsPct / remainingWeightSum) : 0;
   const investmentsAmount = remainingWeightSum > 0 ? remaining * (investmentsPct / remainingWeightSum) : 0;
   const goalsAmount = remainingWeightSum > 0 ? remaining * (goalsPct / remainingWeightSum) : 0;
-
-  const allocated = necessitiesAmount + lifestyleAmount + savingsAmount + investmentsAmount + goalsAmount;
-  const bufferAmount = Math.max(monthlySalary - allocated, 0);
+  const bufferAmount = remainingWeightSum > 0 ? remaining * (bufferPct / remainingWeightSum) : 0;
 
   return {
     necessitiesAmount: round2(necessitiesAmount),

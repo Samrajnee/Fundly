@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
 
-export async function getSafeToSpend(_req: Request, res: Response, next: NextFunction) {
+
+export async function getSafeToSpend(req: Request, res: Response, next: NextFunction) {
   try {
     const activePlan = await prisma.salaryProfile.findFirst({
-      where: { userId: TEMP_USER_ID, isActive: true },
+      where: { userId: req.userId!, isActive: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -25,7 +25,7 @@ export async function getSafeToSpend(_req: Request, res: Response, next: NextFun
 
     const spentResult = await prisma.transaction.aggregate({
       where: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         date: { gte: start, lt: end },
         category: { type: "LIFESTYLE" },
       },

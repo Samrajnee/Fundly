@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 import { calculateFinancialHealthScore } from "../services/healthScore.service";
 
-const TEMP_USER_ID = "temp-user-id";
 
-export async function getDashboard(_req: Request, res: Response, next: NextFunction) {
+
+export async function getDashboard(req: Request, res: Response, next: NextFunction) {
   try {
     const activePlan = await prisma.salaryProfile.findFirst({
-      where: { userId: TEMP_USER_ID, isActive: true },
+      where: { userId: req.userId!, isActive: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -30,7 +30,7 @@ export async function getDashboard(_req: Request, res: Response, next: NextFunct
 
       const lifestylePool = Number(activePlan.lifestyleAmount) + Number(activePlan.bufferAmount);
       const spentResult = await prisma.transaction.aggregate({
-        where: { userId: TEMP_USER_ID, date: { gte: start, lt: end }, category: { type: "LIFESTYLE" } },
+        where: { userId: req.userId!, date: { gte: start, lt: end }, category: { type: "LIFESTYLE" } },
         _sum: { amount: true },
       });
       const spent = Number(spentResult._sum.amount ?? 0);
@@ -51,24 +51,24 @@ export async function getDashboard(_req: Request, res: Response, next: NextFunct
 
     const healthScoreFull = await calculateFinancialHealthScore();
 
-    const investments = await prisma.investment.findMany({ where: { userId: TEMP_USER_ID } });
+    const investments = await prisma.investment.findMany({ where: { userId: req.userId! } });
     const totalInvestments = investments.reduce((sum, i) => sum + Number(i.currentValue), 0);
-    const emergencyFund = await prisma.emergencyFund.findUnique({ where: { userId: TEMP_USER_ID } });
+    const emergencyFund = await prisma.emergencyFund.findUnique({ where: { userId: req.userId! } });
     const emergencyFundAmount = emergencyFund ? Number(emergencyFund.currentAmount) : 0;
     const activeGoals = await prisma.goal.findMany({
-      where: { userId: TEMP_USER_ID, status: "ACTIVE" },
+      where: { userId: req.userId!, status: "ACTIVE" },
       orderBy: { targetDate: "asc" },
       take: 3,
     });
     const goalsSavings = activeGoals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
-    const debts = await prisma.debt.findMany({ where: { userId: TEMP_USER_ID } });
+    const debts = await prisma.debt.findMany({ where: { userId: req.userId! } });
     const totalDebt = debts.reduce((sum, d) => sum + Number(d.outstandingAmount), 0);
     const netWorth = totalInvestments + emergencyFundAmount + goalsSavings - totalDebt;
 
-    const allActiveGoalsCount = await prisma.goal.count({ where: { userId: TEMP_USER_ID, status: "ACTIVE" } });
+    const allActiveGoalsCount = await prisma.goal.count({ where: { userId: req.userId!, status: "ACTIVE" } });
 
     const achievedMilestonesCount = await prisma.milestoneAchievement.count({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
     });
 
     let emergencyFundPercentComplete: number | null = null;

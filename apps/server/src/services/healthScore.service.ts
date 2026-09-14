@@ -1,15 +1,14 @@
 import { prisma } from "@fundly/database";
 import type { FinancialHealthScoreDTO, HealthScoreComponent } from "@fundly/shared-types";
 
-const TEMP_USER_ID = "temp-user-id";
 const COMPONENT_MAX = 25;
 
-export async function calculateFinancialHealthScore(): Promise<FinancialHealthScoreDTO> {
+export async function calculateFinancialHealthScore(userId: string): Promise<FinancialHealthScoreDTO> {
   const components: HealthScoreComponent[] = [];
 
   // 1. Savings Rate: (savings + investments) / salary
   const activePlan = await prisma.salaryProfile.findFirst({
-    where: { userId: TEMP_USER_ID, isActive: true },
+    where: { userId, isActive: true },
     orderBy: { createdAt: "desc" },
   });
 
@@ -39,7 +38,7 @@ export async function calculateFinancialHealthScore(): Promise<FinancialHealthSc
   }
 
   // 2. Debt-to-Income Ratio: total EMI / salary
-  const debts = await prisma.debt.findMany({ where: { userId: TEMP_USER_ID } });
+  const debts = await prisma.debt.findMany({ where: { userId } });
   const totalEmi = debts.reduce((sum, d) => sum + Number(d.emiAmount), 0);
 
   if (activePlan) {
@@ -67,7 +66,7 @@ export async function calculateFinancialHealthScore(): Promise<FinancialHealthSc
   }
 
   // 3. Insurance Coverage: has HEALTH and LIFE policies
-  const policies = await prisma.insurancePolicy.findMany({ where: { userId: TEMP_USER_ID } });
+  const policies = await prisma.insurancePolicy.findMany({ where: { userId } });
   const hasHealth = policies.some((p) => p.type === "HEALTH");
   const hasLife = policies.some((p) => p.type === "LIFE");
   const insuranceScore = (hasHealth ? COMPONENT_MAX / 2 : 0) + (hasLife ? COMPONENT_MAX / 2 : 0);
@@ -85,7 +84,7 @@ export async function calculateFinancialHealthScore(): Promise<FinancialHealthSc
   });
 
   // 4. Goal Progress: average % completion across active goals
-  const goals = await prisma.goal.findMany({ where: { userId: TEMP_USER_ID, status: "ACTIVE" } });
+  const goals = await prisma.goal.findMany({ where: { userId, status: "ACTIVE" } });
   if (goals.length > 0) {
     const avgProgress =
       goals.reduce((sum, g) => sum + Number(g.currentAmount) / Number(g.targetAmount), 0) / goals.length;

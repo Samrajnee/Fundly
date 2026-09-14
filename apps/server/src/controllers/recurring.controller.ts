@@ -3,7 +3,7 @@ import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const createRecurringSchema = z.object({
   categoryId: z.string().min(1),
@@ -21,7 +21,7 @@ export async function createRecurringExpense(req: Request, res: Response, next: 
     }
 
     const recurring = await prisma.recurringExpense.create({
-      data: { userId: TEMP_USER_ID, ...parsed.data },
+      data: { userId: req.userId!, ...parsed.data },
       include: { category: true },
     });
 
@@ -31,10 +31,10 @@ export async function createRecurringExpense(req: Request, res: Response, next: 
   }
 }
 
-export async function listRecurringExpenses(_req: Request, res: Response, next: NextFunction) {
+export async function listRecurringExpenses(req: Request, res: Response, next: NextFunction) {
   try {
     const recurring = await prisma.recurringExpense.findMany({
-      where: { userId: TEMP_USER_ID, isActive: true },
+      where: { userId: req.userId!, isActive: true },
       include: { category: true },
       orderBy: { createdAt: "desc" },
     });

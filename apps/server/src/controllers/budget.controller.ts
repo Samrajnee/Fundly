@@ -3,7 +3,7 @@ import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 
-const TEMP_USER_ID = "temp-user-id";
+
 
 const setBudgetSchema = z.object({
   categoryId: z.string().min(1),
@@ -19,11 +19,11 @@ export async function setBudget(req: Request, res: Response, next: NextFunction)
 
     const budget = await prisma.budget.upsert({
       where: {
-        userId_categoryId: { userId: TEMP_USER_ID, categoryId: parsed.data.categoryId },
+        userId_categoryId: { userId: req.userId!, categoryId: parsed.data.categoryId },
       },
       update: { monthlyLimit: parsed.data.monthlyLimit },
       create: {
-        userId: TEMP_USER_ID,
+        userId: req.userId!,
         categoryId: parsed.data.categoryId,
         monthlyLimit: parsed.data.monthlyLimit,
       },
@@ -35,14 +35,14 @@ export async function setBudget(req: Request, res: Response, next: NextFunction)
   }
 }
 
-export async function listBudgetProgress(_req: Request, res: Response, next: NextFunction) {
+export async function listBudgetProgress(req: Request, res: Response, next: NextFunction) {
   try {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
     const budgets = await prisma.budget.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: req.userId! },
       include: { category: true },
     });
 
@@ -50,7 +50,7 @@ export async function listBudgetProgress(_req: Request, res: Response, next: Nex
       budgets.map(async (budget) => {
         const spentResult = await prisma.transaction.aggregate({
           where: {
-            userId: TEMP_USER_ID,
+            userId: req.userId!,
             categoryId: budget.categoryId,
             date: { gte: start, lt: end },
           },
