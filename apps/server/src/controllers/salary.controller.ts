@@ -4,9 +4,6 @@ import { salaryPlannerInputSchema } from "../validators/salary.validator";
 import { calculateSalaryBreakdown } from "../services/salaryAllocation.service";
 import { AppError } from "../middlewares/errorHandler";
 
-// TEMPORARY: hardcoded until auth is built in a later phase
-
-
 export async function createSalaryPlan(req: Request, res: Response, next: NextFunction) {
   try {
     const parsed = salaryPlannerInputSchema.safeParse(req.body);
@@ -14,7 +11,12 @@ export async function createSalaryPlan(req: Request, res: Response, next: NextFu
       throw new AppError(parsed.error.issues[0].message, 422);
     }
 
-    const breakdown = calculateSalaryBreakdown(parsed.data);
+    const user = await prisma.user.findUnique({ where: { id: req.userId! } });
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    const breakdown = calculateSalaryBreakdown({ ...parsed.data, incomeType: user.incomeType });
 
     const profile = await prisma.salaryProfile.updateMany({
       where: { userId: req.userId!, isActive: true },
@@ -22,20 +24,20 @@ export async function createSalaryPlan(req: Request, res: Response, next: NextFu
     });
 
     const saved = await prisma.salaryProfile.create({
-  data: {
-    userId: req.userId!,
-    monthlySalary: parsed.data.monthlySalary,
-    livingSituation: parsed.data.livingSituation,
-    supportsFamily: parsed.data.supportsFamily,
-    necessitiesAmount: breakdown.necessitiesAmount,
-    lifestyleAmount: breakdown.lifestyleAmount,
-    savingsAmount: breakdown.savingsAmount,
-    investmentsAmount: breakdown.investmentsAmount,
-    goalsAmount: breakdown.goalsAmount,
-    bufferAmount: breakdown.bufferAmount,
-    isActive: true,
-  },
-});
+      data: {
+        userId: req.userId!,
+        monthlySalary: parsed.data.monthlySalary,
+        livingSituation: parsed.data.livingSituation,
+        supportsFamily: parsed.data.supportsFamily,
+        necessitiesAmount: breakdown.necessitiesAmount,
+        lifestyleAmount: breakdown.lifestyleAmount,
+        savingsAmount: breakdown.savingsAmount,
+        investmentsAmount: breakdown.investmentsAmount,
+        goalsAmount: breakdown.goalsAmount,
+        bufferAmount: breakdown.bufferAmount,
+        isActive: true,
+      },
+    });
 
     res.status(201).json({ success: true, data: saved });
   } catch (err) {

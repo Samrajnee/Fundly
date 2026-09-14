@@ -2,15 +2,10 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { apiGet, apiPost } from "./api";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import type { ProfileDTO } from "@fundly/shared-types";
 
 interface AuthContextValue {
-  user: User | null;
+  user: ProfileDTO | null;
   loading: boolean;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
@@ -19,12 +14,12 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ProfileDTO | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function refresh() {
     try {
-      const data = await apiGet<User>("/auth/me");
+      const data = await apiGet<ProfileDTO>("/profile");
       setUser(data);
     } catch {
       setUser(null);

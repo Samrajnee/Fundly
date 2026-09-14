@@ -1,7 +1,11 @@
 import type { SalaryPlannerInput, SalaryBreakdown } from "@fundly/shared-types";
 
-export function calculateSalaryBreakdown(input: SalaryPlannerInput): SalaryBreakdown {
-  const { monthlySalary, livingSituation, supportsFamily, fixedExpenses } = input;
+interface AllocationInput extends SalaryPlannerInput {
+  incomeType?: "FIXED_SALARY" | "IRREGULAR" | "FREELANCE";
+}
+
+export function calculateSalaryBreakdown(input: AllocationInput): SalaryBreakdown {
+  const { monthlySalary, livingSituation, supportsFamily, fixedExpenses, incomeType } = input;
 
   let necessitiesPct = 0.5;
   let lifestylePct = 0.2;
@@ -31,13 +35,18 @@ export function calculateSalaryBreakdown(input: SalaryPlannerInput): SalaryBreak
     lifestylePct = Math.max(0.1, lifestylePct - 0.1);
   }
 
-  // Necessities = whichever is larger: the planned share, or actual fixed costs.
+  // Irregular/freelance income: prioritize a bigger buffer over lifestyle/investments,
+  // since monthly income can't be relied on the way a fixed salary can.
+  if (incomeType === "IRREGULAR" || incomeType === "FREELANCE") {
+    const shift = 0.05;
+    lifestylePct = Math.max(0.05, lifestylePct - shift);
+    investmentsPct = Math.max(0.05, investmentsPct - shift * 0.4);
+    bufferPct += shift * 1.4;
+  }
+
   const plannedNecessities = monthlySalary * necessitiesPct;
   const necessitiesAmount = Math.max(plannedNecessities, fixedExpenses);
 
-  // Whatever's left after necessities gets split across lifestyle, savings,
-  // investments, goals, AND buffer — proportionally to their original weights.
-  // Buffer now gets a real reserved slice instead of being pure rounding leftover.
   const remaining = Math.max(monthlySalary - necessitiesAmount, 0);
   const remainingWeightSum = lifestylePct + savingsPct + investmentsPct + goalsPct + bufferPct;
 

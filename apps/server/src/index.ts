@@ -30,6 +30,7 @@ import netWorthRoutes from "./routes/netWorth.routes";
 import milestoneRoutes from "./routes/milestone.routes";
 import spendingInsightsRoutes from "./routes/spendingInsights.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
+import profileRoutes from "./routes/profile.routes";
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use("/api/net-worth", requireAuth, netWorthRoutes);
 app.use("/api/milestones", requireAuth, milestoneRoutes);
 app.use("/api/spending-insights", requireAuth, spendingInsightsRoutes);
 app.use("/api/dashboard", requireAuth, dashboardRoutes);
+app.use("/api/profile", requireAuth, profileRoutes);
 
 app.use(errorHandler);
 

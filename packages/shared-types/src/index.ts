@@ -16,3 +16,4 @@ export * from "./netWorth";
 export * from "./milestone";
 export * from "./spendingInsights";
 export * from "./dashboard";
+export * from "./profile";
