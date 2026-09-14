@@ -84,7 +84,7 @@ export default function GoalsPage() {
         const percent = Math.min(Math.round((g.currentAmount / g.targetAmount) * 100), 100);
         return (
           <div key={g.id} style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}>
-            <strong>{g.name}</strong> — {g.status}
+            <strong>{g.name}</strong> - {g.status}
             <div style={{ background: "#eee", height: "8px", borderRadius: "4px", overflow: "hidden", margin: "0.5rem 0" }}>
               <div style={{ width: `${percent}%`, background: "#3a3", height: "100%" }} />
             </div>

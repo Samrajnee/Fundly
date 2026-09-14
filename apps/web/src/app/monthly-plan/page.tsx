@@ -39,7 +39,7 @@ export default function MonthlyPlanPage() {
       </table>
 
       <p style={{ marginTop: "1.5rem", fontSize: "0.9rem", color: "#666" }}>
-        This snapshot is locked in for the month — it won't change even if you update your Salary Plan later. Next month, a new plan will be generated automatically from whatever your active Salary Plan is at that time.
+        This snapshot is locked in for the month - it won't change even if you update your Salary Plan later. Next month, a new plan will be generated automatically from whatever your active Salary Plan is at that time.
       </p>
     </main>
   );

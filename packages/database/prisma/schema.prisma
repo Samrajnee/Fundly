@@ -339,3 +339,26 @@ model MilestoneAchievement {
 
   @@unique([userId, key])
 }
+
+enum EducationCategory {
+  BASICS
+  SAVINGS
+  INVESTING
+  INSURANCE
+  DEBT
+  TAX
+  RETIREMENT
+}
+
+model EducationArticle {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  title       String
+  category    EducationCategory
+  summary     String
+  content     String            @db.Text
+  readMinutes Int               @default(3)
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}

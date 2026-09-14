@@ -210,4 +210,7 @@ export default function DashboardPage() {
       </div>
     </main>
   );
+  <div style={{ marginTop: "1.5rem" }}>
+  <Link href="/education">📚 Financial Education →</Link>
+</div>
 }

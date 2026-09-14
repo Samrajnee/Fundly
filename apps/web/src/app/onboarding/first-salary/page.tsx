@@ -11,19 +11,19 @@ export default function FirstSalaryModePage() {
       <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
         <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
           <strong>Necessities</strong>
-          <p>Rent, food, transport, bills — the things you must pay every month, no matter what.</p>
+          <p>Rent, food, transport, bills - the things you must pay every month, no matter what.</p>
         </div>
         <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
           <strong>Lifestyle</strong>
-          <p>Dining out, entertainment, shopping — the fun stuff. Enjoying your money matters too.</p>
+          <p>Dining out, entertainment, shopping - the fun stuff. Enjoying your money matters too.</p>
         </div>
         <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
           <strong>Savings & Investments</strong>
-          <p>Money set aside for the future — building an emergency fund first, then investing for growth.</p>
+          <p>Money set aside for the future - building an emergency fund first, then investing for growth.</p>
         </div>
         <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
           <strong>Goals</strong>
-          <p>Anything you're saving toward on purpose — a trip, a gadget, a bike.</p>
+          <p>Anything you're saving toward on purpose - a trip, a gadget, a bike.</p>
         </div>
         <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
           <strong>Buffer</strong>

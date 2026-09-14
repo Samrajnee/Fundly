@@ -31,6 +31,7 @@ import milestoneRoutes from "./routes/milestone.routes";
 import spendingInsightsRoutes from "./routes/spendingInsights.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 import profileRoutes from "./routes/profile.routes";
+import educationRoutes from "./routes/education.routes";
 
 const app = express();
 
@@ -44,7 +45,7 @@ app.use(morgan("dev"));
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 
-// Protected routes — every one of these now requires a valid session
+// Protected routes - every one of these now requires a valid session
 app.use("/api/salary", requireAuth, salaryRoutes);
 app.use("/api/transactions", requireAuth, transactionRoutes);
 app.use("/api/categories", requireAuth, categoryRoutes);
@@ -66,6 +67,7 @@ app.use("/api/milestones", requireAuth, milestoneRoutes);
 app.use("/api/spending-insights", requireAuth, spendingInsightsRoutes);
 app.use("/api/dashboard", requireAuth, dashboardRoutes);
 app.use("/api/profile", requireAuth, profileRoutes);
+app.use("/api/education", educationRoutes);
 
 app.use(errorHandler);
 

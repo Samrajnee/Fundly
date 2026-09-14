@@ -37,7 +37,7 @@ export default function OnboardingPage() {
   return (
     <main style={{ maxWidth: 480, margin: "2rem auto", padding: "2rem" }}>
       <h1>Tell us about your situation</h1>
-      <p>Fundly adapts your plan based on this — you can change it anytime later.</p>
+      <p>Fundly adapts your plan based on this - you can change it anytime later.</p>
 
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1.5rem" }}>
         <label>
@@ -66,7 +66,7 @@ export default function OnboardingPage() {
 
         <label>
           <input type="checkbox" {...register("isFirstSalary")} />
-          This is my first salary — guide me through it
+          This is my first salary - guide me through it
         </label>
 
         <button type="submit">Continue</button>

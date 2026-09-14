@@ -54,7 +54,7 @@ export async function calculateFinancialHealthScore(userId: string): Promise<Fin
       message:
         debtRatio <= 0.2
           ? "Your EMI load is well within a healthy range."
-          : "Your EMIs are taking up a large share of your salary — consider prioritizing repayment.",
+          : "Your EMIs are taking up a large share of your salary - consider prioritizing repayment.",
     });
   } else {
     components.push({
@@ -79,7 +79,7 @@ export async function calculateFinancialHealthScore(userId: string): Promise<Fin
       hasHealth && hasLife
         ? "You have both health and life coverage."
         : !hasHealth && !hasLife
-        ? "You have no health or life insurance on record — this is a real gap."
+        ? "You have no health or life insurance on record - this is a real gap."
         : `You're missing ${hasHealth ? "life" : "health"} insurance.`,
   });
 

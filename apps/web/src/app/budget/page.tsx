@@ -37,7 +37,7 @@ export default function BudgetPage() {
         const sts = await apiGet<SafeToSpendDTO>("/safe-to-spend");
         setSafeToSpend(sts);
       } catch {
-        setSafeToSpend(null); // no active salary plan yet — fine, just skip this section
+        setSafeToSpend(null); // no active salary plan yet - fine, just skip this section
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load data");
@@ -110,7 +110,7 @@ export default function BudgetPage() {
             />
           </div>
           <small>
-            ₹{p.spent} of ₹{p.monthlyLimit} spent ({p.percentUsed}%) — ₹{p.remaining} remaining
+            ₹{p.spent} of ₹{p.monthlyLimit} spent ({p.percentUsed}%) - ₹{p.remaining} remaining
           </small>
         </div>
       ))}

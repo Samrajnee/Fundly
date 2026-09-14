@@ -116,7 +116,7 @@ export default function DebtsPage() {
       <h2>Your Debts</h2>
       {debts.map((d) => (
         <div key={d.id} style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}>
-          <strong>{d.lender}</strong> — {d.type}
+          <strong>{d.lender}</strong> - {d.type}
           <div style={{ background: "#eee", height: "8px", borderRadius: "4px", overflow: "hidden", margin: "0.5rem 0" }}>
             <div style={{ width: `${d.percentPaidOff}%`, background: "#3a3", height: "100%" }} />
           </div>

@@ -109,7 +109,7 @@ export default function InsurancePage() {
       <h2>Your Policies</h2>
       {policies.map((p) => (
         <div key={p.id} style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}>
-          <strong>{p.provider}</strong> — {p.type}
+          <strong>{p.provider}</strong> - {p.type}
           {p.isExpiringSoon && <span style={{ color: "#d33", marginLeft: "0.5rem" }}>Expiring soon</span>}
           <p>Coverage: ₹{p.coverageAmount}</p>
           <p>Premium: ₹{p.premiumAmount} ({p.premiumFrequency.toLowerCase()})</p>

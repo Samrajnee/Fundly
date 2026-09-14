@@ -32,7 +32,7 @@ export default function HealthScorePage() {
 
       {score.components.map((c) => (
         <div key={c.label} style={{ marginBottom: "1.25rem" }}>
-          <strong>{c.label}</strong> — {c.score}/{c.maxScore}
+          <strong>{c.label}</strong> - {c.score}/{c.maxScore}
           <div style={{ background: "#eee", height: "8px", borderRadius: "4px", overflow: "hidden", margin: "0.5rem 0" }}>
             <div
               style={{

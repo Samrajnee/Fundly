@@ -54,10 +54,10 @@ export async function getLifestyleInflation(req: Request, res: Response, next: N
 
     const hasEnoughData = salaryGrowthPercent !== null && lifestyleSpendGrowthPercent !== null;
 
-    let verdict = "Not enough history yet — this improves as you track more months and update your salary plan over time.";
+    let verdict = "Not enough history yet - this improves as you track more months and update your salary plan over time.";
     if (hasEnoughData) {
       if (lifestyleSpendGrowthPercent! > salaryGrowthPercent!) {
-        verdict = "Your lifestyle spending is growing faster than your salary — worth reining in.";
+        verdict = "Your lifestyle spending is growing faster than your salary - worth reining in.";
       } else {
         verdict = "Your lifestyle spending is growing in line with or slower than your salary. Good discipline.";
       }
