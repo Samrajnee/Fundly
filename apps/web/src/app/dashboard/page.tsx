@@ -2,17 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import type { DashboardDTO } from "@fundly/shared-types";
-import { useAuth } from "@/lib/auth-context";
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const { user, logout } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
     apiGet<DashboardDTO>("/dashboard")
@@ -48,35 +43,6 @@ export default function DashboardPage() {
           padding: "2rem",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <p>Welcome, {user?.name}</p>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "0.75rem",
-              alignItems: "center",
-            }}
-          >
-            <Link href="/settings">Settings</Link>
-
-            <button
-              onClick={async () => {
-                await logout();
-                router.push("/login");
-              }}
-            >
-              Log Out
-            </button>
-          </div>
-        </div>
-
         <h1>Welcome to Fundly</h1>
 
         <p>
@@ -99,35 +65,6 @@ export default function DashboardPage() {
         padding: "2rem",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <p>Welcome, {user?.name}</p>
-
-        <div
-          style={{
-            display: "flex",
-            gap: "0.75rem",
-            alignItems: "center",
-          }}
-        >
-          <Link href="/settings">Settings</Link>
-
-          <button
-            onClick={async () => {
-              await logout();
-              router.push("/login");
-            }}
-          >
-            Log Out
-          </button>
-        </div>
-      </div>
-
       <h1>Dashboard</h1>
 
       {/* Overview Cards */}
