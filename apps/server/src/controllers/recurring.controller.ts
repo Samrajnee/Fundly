@@ -56,3 +56,33 @@ export async function deactivateRecurringExpense(req: Request, res: Response, ne
     next(err);
   }
 }
+
+const updateRecurringSchema = z.object({
+  label: z.string().min(1).optional(),
+  amount: z.number().positive().optional(),
+  frequency: z.enum(["WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"]).optional(),
+  dueDay: z.number().min(1).max(31).optional(),
+});
+
+export async function updateRecurringExpense(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = updateRecurringSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.issues[0].message, 422);
+    }
+
+    const recurring = await prisma.recurringExpense.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!recurring) {
+      throw new AppError("Recurring expense not found", 404);
+    }
+
+    const updated = await prisma.recurringExpense.update({
+      where: { id: req.params.id },
+      data: parsed.data,
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+}

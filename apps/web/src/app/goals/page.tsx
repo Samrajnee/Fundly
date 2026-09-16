@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiPost, apiDelete } from "@/lib/api";
 import type { GoalDTO } from "@fundly/shared-types";
 
 interface GoalFormValues {
@@ -54,6 +54,16 @@ export default function GoalsPage() {
     }
   }
 
+  async function onDelete(goalId: string) {
+  if (!confirm("Delete this goal?")) return;
+  try {
+    await apiDelete(`/goals/${goalId}`);
+    loadGoals();
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Failed to delete goal");
+  }
+}
+
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
       <h1>Financial Goals</h1>
@@ -103,6 +113,9 @@ export default function GoalsPage() {
                   onChange={(e) => setContributions((prev) => ({ ...prev, [g.id]: e.target.value }))}
                 />
                 <button onClick={() => onContribute(g.id)}>Contribute</button>
+                <button onClick={() => onDelete(g.id)} style={{ marginTop: "0.5rem", color: "#d33" }}>
+  Delete Goal
+</button>
               </div>
             )}
           </div>

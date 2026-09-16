@@ -63,6 +63,7 @@ export async function listBudgetProgress(req: Request, res: Response, next: Next
         const percentUsed = monthlyLimit > 0 ? Math.round((spent / monthlyLimit) * 100) : 0;
 
         return {
+          id: budget.id,
           categoryId: budget.categoryId,
           categoryName: budget.category.name,
           monthlyLimit,
@@ -74,6 +75,19 @@ export async function listBudgetProgress(req: Request, res: Response, next: Next
     );
 
     res.json({ success: true, data: progress });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteBudget(req: Request, res: Response, next: NextFunction) {
+  try {
+    const budget = await prisma.budget.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!budget) {
+      throw new AppError("Budget not found", 404);
+    }
+    await prisma.budget.delete({ where: { id: req.params.id } });
+    res.json({ success: true, data: null });
   } catch (err) {
     next(err);
   }

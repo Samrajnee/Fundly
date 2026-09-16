@@ -4,6 +4,7 @@ export interface SetBudgetInput {
 }
 
 export interface BudgetProgressDTO {
+  id: string;
   categoryId: string;
   categoryName: string;
   monthlyLimit: number;

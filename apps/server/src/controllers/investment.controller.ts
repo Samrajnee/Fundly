@@ -55,3 +55,45 @@ export async function listInvestments(req: Request, res: Response, next: NextFun
     next(err);
   }
 }
+
+const updateInvestmentSchema = z.object({
+  name: z.string().min(1).optional(),
+  currentValue: z.number().nonnegative().optional(),
+  notes: z.string().optional(),
+});
+
+export async function updateInvestment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = updateInvestmentSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.issues[0].message, 422);
+    }
+
+    const investment = await prisma.investment.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!investment) {
+      throw new AppError("Investment not found", 404);
+    }
+
+    const updated = await prisma.investment.update({
+      where: { id: req.params.id },
+      data: parsed.data,
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteInvestment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const investment = await prisma.investment.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!investment) {
+      throw new AppError("Investment not found", 404);
+    }
+    await prisma.investment.delete({ where: { id: req.params.id } });
+    res.json({ success: true, data: null });
+  } catch (err) {
+    next(err);
+  }
+}

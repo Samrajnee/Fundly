@@ -57,3 +57,47 @@ export async function listDebts(req: Request, res: Response, next: NextFunction)
     next(err);
   }
 }
+
+const updateDebtSchema = z.object({
+  type: z.enum(["CREDIT_CARD", "PERSONAL_LOAN", "HOME_LOAN", "VEHICLE_LOAN", "EDUCATION_LOAN", "OTHER"]).optional(),
+  lender: z.string().min(1).optional(),
+  outstandingAmount: z.number().nonnegative().optional(),
+  interestRate: z.number().nonnegative().optional(),
+  emiAmount: z.number().positive().optional(),
+});
+
+export async function updateDebt(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = updateDebtSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.issues[0].message, 422);
+    }
+
+    const debt = await prisma.debt.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!debt) {
+      throw new AppError("Debt not found", 404);
+    }
+
+    const updated = await prisma.debt.update({
+      where: { id: req.params.id },
+      data: parsed.data,
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteDebt(req: Request, res: Response, next: NextFunction) {
+  try {
+    const debt = await prisma.debt.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!debt) {
+      throw new AppError("Debt not found", 404);
+    }
+    await prisma.debt.delete({ where: { id: req.params.id } });
+    res.json({ success: true, data: null });
+  } catch (err) {
+    next(err);
+  }
+}

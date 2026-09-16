@@ -89,3 +89,54 @@ export async function contributeToGoal(req: Request, res: Response, next: NextFu
     next(err);
   }
 }
+const updateGoalSchema = z.object({
+  name: z.string().min(1).optional(),
+  targetAmount: z.number().positive().optional(),
+  targetDate: z.string().min(1).optional(),
+});
+
+export async function updateGoal(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = updateGoalSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.issues[0].message, 422);
+    }
+
+    const goal = await prisma.goal.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!goal) {
+      throw new AppError("Goal not found", 404);
+    }
+
+    const targetAmount = parsed.data.targetAmount ?? Number(goal.targetAmount);
+    const targetDate = parsed.data.targetDate ? new Date(parsed.data.targetDate) : goal.targetDate;
+    const monthlyRequired = calculateMonthlyRequired(targetAmount, Number(goal.currentAmount), targetDate);
+
+    const updated = await prisma.goal.update({
+      where: { id: req.params.id },
+      data: {
+        name: parsed.data.name,
+        targetAmount: parsed.data.targetAmount,
+        targetDate: parsed.data.targetDate ? targetDate : undefined,
+        monthlyRequired,
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteGoal(req: Request, res: Response, next: NextFunction) {
+  try {
+    const goal = await prisma.goal.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!goal) {
+      throw new AppError("Goal not found", 404);
+    }
+    await prisma.goal.delete({ where: { id: req.params.id } });
+    res.json({ success: true, data: null });
+  } catch (err) {
+    next(err);
+  }
+}
+

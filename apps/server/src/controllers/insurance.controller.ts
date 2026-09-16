@@ -56,3 +56,50 @@ export async function listInsurance(req: Request, res: Response, next: NextFunct
     next(err);
   }
 }
+
+const updateInsuranceSchema = z.object({
+  provider: z.string().min(1).optional(),
+  coverageAmount: z.number().positive().optional(),
+  premiumAmount: z.number().positive().optional(),
+  expiryDate: z.string().min(1).optional(),
+  notes: z.string().optional(),
+});
+
+export async function updateInsurance(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = updateInsuranceSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.issues[0].message, 422);
+    }
+
+    const policy = await prisma.insurancePolicy.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!policy) {
+      throw new AppError("Policy not found", 404);
+    }
+
+    const updated = await prisma.insurancePolicy.update({
+      where: { id: req.params.id },
+      data: {
+        ...parsed.data,
+        expiryDate: parsed.data.expiryDate ? new Date(parsed.data.expiryDate) : undefined,
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteInsurance(req: Request, res: Response, next: NextFunction) {
+  try {
+    const policy = await prisma.insurancePolicy.findFirst({ where: { id: req.params.id, userId: req.userId! } });
+    if (!policy) {
+      throw new AppError("Policy not found", 404);
+    }
+    await prisma.insurancePolicy.delete({ where: { id: req.params.id } });
+    res.json({ success: true, data: null });
+  } catch (err) {
+    next(err);
+  }
+}
