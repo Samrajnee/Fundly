@@ -9,57 +9,57 @@ const NAV_GROUPS = [
     label: "Overview",
     links: [
       { href: "/dashboard", label: "Dashboard" },
-      { href: "/health-score", label: "Financial Health Score" },
-      { href: "/net-worth", label: "Net Worth" },
+      { href: "/health-score", label: "Financial health score" },
+      { href: "/net-worth", label: "Net worth" },
       { href: "/milestones", label: "Milestones" },
     ],
   },
   {
     label: "Salary",
     links: [
-      { href: "/salary-planner", label: "Salary Planner" },
-      { href: "/salary-history", label: "Salary History" },
-      { href: "/salary-increment", label: "Increment Planner" },
+      { href: "/salary-planner", label: "Salary planner" },
+      { href: "/salary-history", label: "Salary history" },
+      { href: "/salary-increment", label: "Increment planner" },
     ],
   },
   {
     label: "Spending",
     links: [
-      { href: "/expenses", label: "Expense Tracker" },
-      { href: "/recurring", label: "Recurring Expenses" },
-      { href: "/budget", label: "Budget & Safe-to-Spend" },
-      { href: "/spending-insights", label: "Spending Insights" },
-      { href: "/lifestyle-inflation", label: "Lifestyle Inflation" },
+      { href: "/expenses", label: "Expense tracker" },
+      { href: "/recurring", label: "Recurring expenses" },
+      { href: "/budget", label: "Budget and safe-to-spend" },
+      { href: "/spending-insights", label: "Spending insights" },
+      { href: "/lifestyle-inflation", label: "Lifestyle inflation" },
     ],
   },
   {
     label: "Planning",
     links: [
       { href: "/goals", label: "Goals" },
-      { href: "/ai-goal-planner", label: "AI Goal Planner" },
-      { href: "/emergency-fund", label: "Emergency Fund" },
-      { href: "/monthly-plan", label: "Monthly Plan" },
-      { href: "/monthly-review", label: "Monthly Review" },
+      { href: "/ai-goal-planner", label: "AI goal planner" },
+      { href: "/emergency-fund", label: "Emergency fund" },
+      { href: "/monthly-plan", label: "Monthly plan" },
+      { href: "/monthly-review", label: "Monthly review" },
     ],
   },
   {
-    label: "Assets & Protection",
+    label: "Assets and protection",
     links: [
       { href: "/investments", label: "Investments" },
-      { href: "/debts", label: "Debt & EMI" },
+      { href: "/debts", label: "Debt and EMI" },
       { href: "/insurance", label: "Insurance" },
     ],
   },
   {
-    label: "AI Tools",
+    label: "AI tools",
     links: [
       { href: "/ask-fundly", label: "Ask Fundly" },
-      { href: "/what-if", label: "What-If Simulator" },
+      { href: "/what-if", label: "What-if simulator" },
     ],
   },
   {
     label: "Learn",
-    links: [{ href: "/education", label: "Financial Education" }],
+    links: [{ href: "/education", label: "Financial education" }],
   },
 ];
 
@@ -73,44 +73,82 @@ export function Nav() {
   return (
     <nav
       style={{
-        width: 220,
+        width: 236,
         flexShrink: 0,
-        borderRight: "1px solid #ddd",
+        borderRight: "1px solid var(--color-border)",
         height: "100vh",
         overflowY: "auto",
-        padding: "1rem",
+        padding: "1.5rem 1rem",
         position: "sticky",
         top: 0,
+        background: "var(--color-surface)",
       }}
     >
-      <Link href="/dashboard" style={{ fontWeight: "bold", fontSize: "1.1rem", display: "block", marginBottom: "1.5rem" }}>
+      <Link
+        href="/dashboard"
+        style={{
+          fontFamily: "var(--font-heading)",
+          fontWeight: 500,
+          fontSize: "1.15rem",
+          color: "var(--color-ink)",
+          display: "block",
+          marginBottom: "1.75rem",
+          padding: "0 0.5rem",
+        }}
+      >
         Fundly
       </Link>
 
       {NAV_GROUPS.map((group) => (
-        <div key={group.label} style={{ marginBottom: "1.25rem" }}>
-          <small style={{ color: "#999", textTransform: "uppercase", letterSpacing: "0.03em" }}>{group.label}</small>
-          <div style={{ display: "flex", flexDirection: "column", marginTop: "0.25rem" }}>
-            {group.links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{
-                  padding: "0.35rem 0",
-                  fontWeight: pathname === link.href ? "bold" : "normal",
-                  textDecoration: "none",
-                  color: pathname === link.href ? "#000" : "#333",
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
+        <div key={group.label} style={{ marginBottom: "1.4rem" }}>
+          <p
+            style={{
+              fontSize: "0.7rem",
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "var(--color-text-muted)",
+              margin: "0 0 0.4rem",
+              padding: "0 0.5rem",
+            }}
+          >
+            {group.label}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {group.links.map((link) => {
+              const active = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  style={{
+                    padding: "0.4rem 0.5rem",
+                    borderRadius: "var(--radius-sm)",
+                    fontSize: "0.88rem",
+                    fontWeight: active ? 600 : 400,
+                    textDecoration: "none",
+                    color: active ? "var(--color-clay-dark)" : "var(--color-text-secondary)",
+                    background: active ? "var(--color-clay-light)" : "transparent",
+                  }}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
         </div>
       ))}
 
-      <div style={{ marginTop: "1.5rem", borderTop: "1px solid #eee", paddingTop: "1rem" }}>
-        <Link href="/settings" style={{ display: "block", padding: "0.35rem 0" }}>
+      <div style={{ marginTop: "1.5rem", borderTop: "1px solid var(--color-border)", paddingTop: "1rem" }}>
+        <Link
+          href="/settings"
+          style={{
+            display: "block",
+            padding: "0.4rem 0.5rem",
+            fontSize: "0.88rem",
+            color: "var(--color-text-secondary)",
+          }}
+        >
           Settings
         </Link>
         <button
@@ -118,9 +156,15 @@ export function Nav() {
             await logout();
             router.push("/login");
           }}
-          style={{ marginTop: "0.5rem" }}
+          style={{
+            marginTop: "0.6rem",
+            width: "100%",
+            background: "transparent",
+            color: "var(--color-text-secondary)",
+            border: "1px solid var(--color-border-strong)",
+          }}
         >
-          Log Out
+          Log out
         </button>
       </div>
     </nav>

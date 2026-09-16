@@ -2,8 +2,37 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { apiGet } from "@/lib/api";
 import type { DashboardDTO } from "@fundly/shared-types";
+import { useCountUp } from "@/lib/useCountUp";
+
+const BREAKDOWN_COLORS = ["#b15e3d", "#c98a5e", "#6e7b4b", "#8f9a6e", "#a6402e", "#d8c8ae"];
+
+function formatCurrency(n: number): string {
+  return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Math.round(n));
+}
+
+function StatCard({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "positive" | "negative" }) {
+  const color =
+    tone === "positive" ? "var(--color-olive-dark)" : tone === "negative" ? "var(--color-danger)" : "var(--color-ink)";
+  return (
+    <div
+      style={{
+        background: "var(--color-surface)",
+        border: "1px solid var(--color-border)",
+        borderRadius: "var(--radius-lg)",
+        padding: "1.1rem 1.25rem",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
+      <p style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", margin: "0 0 0.3rem" }}>{label}</p>
+      <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", fontWeight: 500, color, margin: 0 }}>
+        {value}
+      </p>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardDTO | null>(null);
@@ -12,281 +41,213 @@ export default function DashboardPage() {
   useEffect(() => {
     apiGet<DashboardDTO>("/dashboard")
       .then(setData)
-      .catch((err) =>
-        setError(
-          err instanceof Error ? err.message : "Failed to load dashboard"
-        )
-      );
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load dashboard"));
   }, []);
+
+  const safeToSpendAnimated = useCountUp(data?.safeToSpend?.dailySafeAmount ?? 0);
 
   if (error) {
     return (
-      <main style={{ padding: "2rem" }}>
-        <p style={{ color: "red" }}>{error}</p>
+      <main style={{ padding: "2.5rem" }}>
+        <p style={{ color: "var(--color-danger)" }}>{error}</p>
       </main>
     );
   }
 
   if (!data) {
-    return <main style={{ padding: "2rem" }}>Loading...</main>;
+    return <main style={{ padding: "2.5rem" }}>Loading</main>;
   }
 
-  /*
-   * No active salary plan
-   */
   if (!data.hasActiveSalaryPlan) {
     return (
-      <main
-        style={{
-          maxWidth: 560,
-          margin: "0 auto",
-          padding: "2rem",
-        }}
-      >
+      <main style={{ maxWidth: 560, margin: "0 auto", padding: "3rem 2.5rem" }}>
         <h1>Welcome to Fundly</h1>
-
-        <p>
-          Start by creating your Salary Plan to unlock your dashboard.
-        </p>
-
-        <Link href="/salary-planner">Go to Salary Planner →</Link>
+        <p>Start by creating your salary plan to unlock your dashboard.</p>
+        <Link href="/salary-planner">
+          <button>Go to salary planner</button>
+        </Link>
       </main>
     );
   }
 
-  /*
-   * Active salary plan
-   */
+  const breakdownData = data.breakdown
+    ? [
+        { name: "Necessities", value: data.breakdown.necessitiesAmount },
+        { name: "Lifestyle", value: data.breakdown.lifestyleAmount },
+        { name: "Savings", value: data.breakdown.savingsAmount },
+        { name: "Investments", value: data.breakdown.investmentsAmount },
+        { name: "Goals", value: data.breakdown.goalsAmount },
+        { name: "Buffer", value: data.breakdown.bufferAmount },
+      ]
+    : [];
+
   return (
-    <main
-      style={{
-        maxWidth: 720,
-        margin: "0 auto",
-        padding: "2rem",
-      }}
-    >
+    <main style={{ maxWidth: 920, margin: "0 auto", padding: "2.5rem" }}>
       <h1>Dashboard</h1>
 
-      {/* Overview Cards */}
+      {/* Hero: Safe to Spend */}
+      {data.safeToSpend && (
+        <div
+          style={{
+            background: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--radius-lg)",
+            padding: "1.75rem 2rem",
+            marginTop: "1.5rem",
+            boxShadow: "var(--shadow-card)",
+          }}
+        >
+          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0 0 0.4rem" }}>
+            Safe to spend today
+          </p>
+          <p
+            className="num"
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "2.6rem",
+              fontWeight: 500,
+              color: "var(--color-clay-dark)",
+              margin: 0,
+              lineHeight: 1.1,
+            }}
+          >
+            Rs {formatCurrency(safeToSpendAnimated)}
+          </p>
+          <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", margin: "0.5rem 0 0" }}>
+            {data.safeToSpend.daysLeftInMonth} days left this month · Rs{" "}
+            {formatCurrency(data.safeToSpend.lifestyleBudgetRemaining)} lifestyle budget remaining
+          </p>
+        </div>
+      )}
+
+      {/* Secondary stats — asymmetric, not a 3-card row */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "1.3fr 1fr 1fr",
           gap: "1rem",
-          marginTop: "1.5rem",
+          marginTop: "1rem",
         }}
       >
-        {/* Monthly Salary */}
-        <div
-          style={{
-            border: "1px solid #ccc",
-            padding: "1rem",
-          }}
-        >
-          <small>Monthly Salary</small>
-
-          <div
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-            }}
-          >
-            ₹{data.monthlySalary}
-          </div>
-        </div>
-
-        {/* Net Worth */}
-        <div
-          style={{
-            border: "1px solid #ccc",
-            padding: "1rem",
-          }}
-        >
-          <small>Net Worth</small>
-
-          <div
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-              color: data.netWorth >= 0 ? "#3a3" : "#d33",
-            }}
-          >
-            ₹{data.netWorth}
-          </div>
-        </div>
-
-        {/* Safe to Spend */}
-        {data.safeToSpend && (
-          <div
-            style={{
-              border: "1px solid #ccc",
-              padding: "1rem",
-            }}
-          >
-            <small>Safe to Spend Today</small>
-
-            <div
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-              }}
-            >
-              ₹{data.safeToSpend.dailySafeAmount}
-            </div>
-
-            <small>
-              {data.safeToSpend.daysLeftInMonth} days left this month
-            </small>
-          </div>
-        )}
-
-        {/* Financial Health Score */}
+        <StatCard label="Monthly salary" value={`Rs ${formatCurrency(data.monthlySalary ?? 0)}`} />
+        <StatCard
+          label="Net worth"
+          value={`Rs ${formatCurrency(data.netWorth)}`}
+          tone={data.netWorth >= 0 ? "positive" : "negative"}
+        />
         {data.healthScore && (
-          <div
-            style={{
-              border: "1px solid #ccc",
-              padding: "1rem",
-            }}
-          >
-            <small>Financial Health Score</small>
-
-            <div
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-              }}
-            >
-              {data.healthScore.totalScore} /{" "}
-              {data.healthScore.maxScore}
-            </div>
-
-            <Link href="/health-score">
-              View breakdown →
-            </Link>
-          </div>
+          <StatCard label="Financial health" value={`${data.healthScore.totalScore} / ${data.healthScore.maxScore}`} />
         )}
       </div>
 
-      {/* Monthly Breakdown */}
+      {/* Salary breakdown chart */}
       {data.breakdown && (
-        <div style={{ marginTop: "1.5rem" }}>
-          <h2>Your Monthly Breakdown</h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "260px 1fr",
+            gap: "2rem",
+            alignItems: "center",
+            marginTop: "2.5rem",
+          }}
+        >
+          <div style={{ height: 220 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={breakdownData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={60}
+                  outerRadius={95}
+                  paddingAngle={2}
+                  stroke="none"
+                >
+                  {breakdownData.map((_, idx) => (
+                    <Cell key={idx} fill={BREAKDOWN_COLORS[idx % BREAKDOWN_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value) => `Rs ${formatCurrency(Number(value ?? 0))}`}
+                  contentStyle={{
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: "var(--radius-sm)",
+                    fontSize: "0.85rem",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
 
-          <Link href="/salary-history">
-            View salary history →
-          </Link>
-
-          <ul>
-            <li>
-              Necessities: ₹{data.breakdown.necessitiesAmount}
-            </li>
-            <li>
-              Lifestyle: ₹{data.breakdown.lifestyleAmount}
-            </li>
-            <li>
-              Savings: ₹{data.breakdown.savingsAmount}
-            </li>
-            <li>
-              Investments: ₹{data.breakdown.investmentsAmount}
-            </li>
-            <li>
-              Goals: ₹{data.breakdown.goalsAmount}
-            </li>
-            <li>
-              Buffer: ₹{data.breakdown.bufferAmount}
-            </li>
-          </ul>
+          <div>
+            <h2 style={{ marginTop: 0 }}>Your monthly breakdown</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {breakdownData.map((item, idx) => (
+                <div key={item.name} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                  <span
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      background: BREAKDOWN_COLORS[idx % BREAKDOWN_COLORS.length],
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span style={{ fontSize: "0.9rem", flex: 1 }}>{item.name}</span>
+                  <span className="num" style={{ fontSize: "0.9rem", fontWeight: 500 }}>
+                    Rs {formatCurrency(item.value)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
       {/* Goals */}
-      <div style={{ marginTop: "1.5rem" }}>
-        <h2>Active Goals ({data.activeGoalsCount})</h2>
-
-        {data.goalsSummary.length === 0 ? (
-          <p>
-            No active goals.{" "}
-            <Link href="/goals">Create one →</Link>
-          </p>
-        ) : (
-          data.goalsSummary.map((g) => {
-            const percent = Math.round(
-              (g.currentAmount / g.targetAmount) * 100
-            );
-
+      <h2>Active goals ({data.activeGoalsCount})</h2>
+      {data.goalsSummary.length === 0 ? (
+        <p>
+          No active goals. <Link href="/goals">Create one</Link>
+        </p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+          {data.goalsSummary.map((g) => {
+            const percent = Math.min(Math.round((g.currentAmount / g.targetAmount) * 100), 100);
             return (
-              <div
-                key={g.id}
-                style={{
-                  marginBottom: "0.75rem",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
+              <div key={g.id}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", marginBottom: "0.3rem" }}>
                   <span>{g.name}</span>
-                  <span>{percent}%</span>
+                  <span className="num" style={{ color: "var(--color-text-secondary)" }}>{percent}%</span>
                 </div>
-
-                <div
-                  style={{
-                    background: "#eee",
-                    height: "6px",
-                    borderRadius: "3px",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: `${Math.min(percent, 100)}%`,
-                      background: "#3a3",
-                      height: "100%",
-                    }}
-                  />
+                <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden" }}>
+                  <div style={{ width: `${percent}%`, background: "var(--color-olive)", height: "100%" }} />
                 </div>
               </div>
             );
-          })
-        )}
-
-        <Link href="/goals">View all goals →</Link>
-      </div>
-
-      {/* Emergency Fund */}
-      {data.emergencyFundPercentComplete !== null && (
-        <div style={{ marginTop: "1.5rem" }}>
-          <h2>Emergency Fund</h2>
-
-          <p>
-            {data.emergencyFundPercentComplete}% complete
-          </p>
-
-          <Link href="/emergency-fund">
-            View details →
-          </Link>
+          })}
         </div>
       )}
+      <p style={{ marginTop: "0.75rem" }}>
+        <Link href="/goals">View all goals</Link>
+      </p>
 
-      {/* Milestones */}
-      <div style={{ marginTop: "1.5rem" }}>
-        <h2>Milestones Achieved</h2>
+      {data.emergencyFundPercentComplete !== null && (
+        <>
+          <h2>Emergency fund</h2>
+          <p>{data.emergencyFundPercentComplete}% complete</p>
+          <Link href="/emergency-fund">View details</Link>
+        </>
+      )}
 
-        <p>
-          {data.recentMilestonesCount} of 8 milestones unlocked
-        </p>
+      <h2>Milestones</h2>
+      <p>{data.recentMilestonesCount} of 8 unlocked</p>
+      <Link href="/milestones">View all</Link>
 
-        <Link href="/milestones">View all →</Link>
-      </div>
-
-      {/* Financial Education */}
-      <div style={{ marginTop: "1.5rem" }}>
-        <Link href="/education">
-          Financial Education →
-        </Link>
-      </div>
+      <p style={{ marginTop: "2rem" }}>
+        <Link href="/education">Financial education</Link>
+      </p>
     </main>
   );
 }

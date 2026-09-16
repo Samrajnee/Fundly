@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { apiGet, apiPost } from "@/lib/api";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface Category {
   id: string;
@@ -27,6 +30,10 @@ interface ExpenseFormValues {
   date: string;
 }
 
+function formatCurrency(n: number): string {
+  return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Math.round(n));
+}
+
 export default function ExpensesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -46,13 +53,10 @@ export default function ExpensesPage() {
         apiGet<Category[]>("/categories"),
         apiGet<Transaction[]>("/transactions"),
       ]);
-
       setCategories(cats);
       setTransactions(txns);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load data"
-      );
+      setError(err instanceof Error ? err.message : "Failed to load data");
     }
   }
 
@@ -62,22 +66,17 @@ export default function ExpensesPage() {
 
   async function onParseExpense() {
     if (!nlText.trim()) return;
-
     setNlLoading(true);
     setNlError(null);
-
     try {
       const parsed = await apiPost<{
         amount: number;
         merchant: string | null;
         date: string;
         suggestedCategoryName: string;
-        confidence: string;
       }>("/ai/expense/parse", { text: nlText });
 
-      const matchingCategory = categories.find(
-        (c) => c.name === parsed.suggestedCategoryName
-      );
+      const matchingCategory = categories.find((c) => c.name === parsed.suggestedCategoryName);
 
       await apiPost("/transactions", {
         categoryId: matchingCategory?.id ?? categories[0]?.id,
@@ -89,11 +88,7 @@ export default function ExpensesPage() {
       setNlText("");
       loadData();
     } catch (err) {
-      setNlError(
-        err instanceof Error
-          ? err.message
-          : "Couldn't parse that expense"
-      );
+      setNlError(err instanceof Error ? err.message : "Couldn't parse that expense");
     } finally {
       setNlLoading(false);
     }
@@ -101,157 +96,97 @@ export default function ExpensesPage() {
 
   async function onSubmit(values: ExpenseFormValues) {
     setError(null);
-
     try {
-      await apiPost("/transactions", {
-        ...values,
-        amount: Number(values.amount),
-      });
-
-      reset({
-        date: values.date,
-        categoryId: "",
-        amount: undefined,
-        merchant: "",
-        note: "",
-      });
-
+      await apiPost("/transactions", { ...values, amount: Number(values.amount) });
+      reset({ date: values.date, categoryId: "", amount: undefined, merchant: "", note: "" });
       loadData();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to add expense"
-      );
+      setError(err instanceof Error ? err.message : "Failed to add expense");
     }
   }
 
   return (
-    <main
-      style={{
-        maxWidth: 560,
-        margin: "0 auto",
-        padding: "2rem",
-      }}
-    >
-      <h1>Expense Tracker</h1>
+    <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Expense tracker" description="Record and categorize your spending." />
 
-      <div
-        style={{
-          border: "1px solid #ccc",
-          padding: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <Card style={{ marginBottom: "1.5rem" }}>
         <label>
-          Quick add (describe it naturally)
+          Quick add
           <input
             type="text"
-            placeholder='e.g. "Spent ₹850 on dinner yesterday"'
+            placeholder="Spent Rs 850 on dinner yesterday"
             value={nlText}
             onChange={(e) => setNlText(e.target.value)}
-            style={{ width: "100%" }}
           />
         </label>
-
-        <button
-          onClick={onParseExpense}
-          disabled={nlLoading}
-          style={{ marginTop: "0.5rem" }}
-        >
-          {nlLoading ? "Parsing..." : "Add with AI"}
+        <button onClick={onParseExpense} disabled={nlLoading}>
+          {nlLoading ? "Parsing" : "Add with AI"}
         </button>
+        {nlError && <p style={{ color: "var(--color-danger)", marginTop: "0.5rem" }}>{nlError}</p>}
+      </Card>
 
-        {nlError && (
-          <p style={{ color: "red", fontSize: "0.9rem" }}>
-            {nlError}
-          </p>
-        )}
-      </div>
+      <Card>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <label>
+            Category
+            <select {...register("categoryId", { required: true })}>
+              <option value="">Select category</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Amount (Rs)
+            <input type="number" step="0.01" {...register("amount", { required: true, valueAsNumber: true })} />
+          </label>
+          <label>
+            Merchant (optional)
+            <input type="text" {...register("merchant")} />
+          </label>
+          <label>
+            Note (optional)
+            <input type="text" {...register("note")} />
+          </label>
+          <label>
+            Date
+            <input type="date" {...register("date", { required: true })} />
+          </label>
+          <button type="submit">Add expense</button>
+        </form>
+      </Card>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.75rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <label>
-          Category
-          <select {...register("categoryId", { required: true })}>
-            <option value="">Select category</option>
+      {error && <p style={{ color: "var(--color-danger)", marginTop: "1rem" }}>{error}</p>}
 
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} ({c.type})
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Amount (₹)
-          <input
-            type="number"
-            step="0.01"
-            {...register("amount", {
-              required: true,
-              valueAsNumber: true,
-            })}
-          />
-        </label>
-
-        <label>
-          Merchant (optional)
-          <input type="text" {...register("merchant")} />
-        </label>
-
-        <label>
-          Note (optional)
-          <input type="text" {...register("note")} />
-        </label>
-
-        <label>
-          Date
-          <input
-            type="date"
-            {...register("date", { required: true })}
-          />
-        </label>
-
-        <button type="submit">Add Expense</button>
-      </form>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <h2>Recent Expenses</h2>
-
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-        }}
-      >
-        <thead>
-          <tr>
-            <th style={{ textAlign: "left" }}>Date</th>
-            <th style={{ textAlign: "left" }}>Category</th>
-            <th style={{ textAlign: "left" }}>Merchant</th>
-            <th style={{ textAlign: "right" }}>Amount</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {transactions.map((t) => (
-            <tr key={t.id}>
-              <td>{new Date(t.date).toLocaleDateString()}</td>
-              <td>{t.category.name}</td>
-              <td>{t.merchant ?? "-"}</td>
-              <td style={{ textAlign: "right" }}>₹{t.amount}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2>Recent expenses</h2>
+      {transactions.length === 0 ? (
+        <EmptyState message="No expenses recorded yet." />
+      ) : (
+        <Card style={{ padding: 0 }}>
+          <table>
+            <thead>
+              <tr>
+                <th style={{ padding: "0.75rem 1rem" }}>Date</th>
+                <th>Category</th>
+                <th>Merchant</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem" }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((t) => (
+                <tr key={t.id}>
+                  <td style={{ paddingLeft: "1rem" }}>{new Date(t.date).toLocaleDateString()}</td>
+                  <td>{t.category.name}</td>
+                  <td>{t.merchant ?? "\u2014"}</td>
+                  <td className="num" style={{ textAlign: "right", paddingRight: "1rem" }}>
+                    Rs {formatCurrency(Number(t.amount))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      )}
     </main>
   );
 }

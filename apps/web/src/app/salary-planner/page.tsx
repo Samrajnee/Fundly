@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { apiPost } from "@/lib/api";
 import type { SalaryBreakdown } from "@fundly/shared-types";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Callout } from "@/components/ui/Callout";
 
 const formSchema = z.object({
   monthlySalary: z.number().positive("Enter a valid salary"),
@@ -21,6 +25,10 @@ interface SalaryPlanResult extends SalaryBreakdown {
   source?: string;
 }
 
+function formatCurrency(n: number): string {
+  return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Math.round(n));
+}
+
 export default function SalaryPlannerPage() {
   const [result, setResult] = useState<SalaryPlanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +40,7 @@ export default function SalaryPlannerPage() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      supportsFamily: false,
-    },
+    defaultValues: { supportsFamily: false },
   });
 
   async function onSubmit(values: FormValues) {
@@ -51,68 +57,90 @@ export default function SalaryPlannerPage() {
   }
 
   return (
-    <main style={{ maxWidth: 480, margin: "0 auto", padding: "2rem" }}>
-      <h1>Salary Planner</h1>
-      <p>Enter your salary and situation to get your monthly breakdown.</p>
-      
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        <label>
-          Monthly Salary (₹)
-          <input type="number" {...register("monthlySalary", { valueAsNumber: true })} />
-          {errors.monthlySalary && <p style={{ color: "red" }}>{errors.monthlySalary.message}</p>}
-        </label>
+    <main style={{ maxWidth: 620, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader
+        title="Salary planner"
+        description="Enter your salary and situation to get a plan tailored to you, not a fixed formula."
+      />
+      <p style={{ marginTop: "-1.2rem", marginBottom: "1.75rem" }}>
+        <Link href="/salary-history">View salary history</Link>
+      </p>
 
-        <label>
-          Living Situation
-          <select {...register("livingSituation")}>
-            <option value="WITH_PARENTS">With Parents</option>
-            <option value="RENTING_ALONE">Renting Alone</option>
-            <option value="RENTING_SHARED">Renting Shared</option>
-            <option value="OWN_HOME">Own Home</option>
-          </select>
-        </label>
+      <Card>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <label>
+            Monthly salary (Rs)
+            <input type="number" {...register("monthlySalary", { valueAsNumber: true })} />
+          </label>
+          {errors.monthlySalary && <p style={{ color: "var(--color-danger)", marginTop: "-0.75rem" }}>{errors.monthlySalary.message}</p>}
 
-        <label>
-          <input type="checkbox" {...register("supportsFamily")} />
-          I support family financially
-        </label>
+          <label>
+            Living situation
+            <select {...register("livingSituation")}>
+              <option value="WITH_PARENTS">With parents</option>
+              <option value="RENTING_ALONE">Renting alone</option>
+              <option value="RENTING_SHARED">Renting shared</option>
+              <option value="OWN_HOME">Own home</option>
+            </select>
+          </label>
 
-        <label>
-          Fixed Monthly Expenses (₹)
-          <input type="number" {...register("fixedExpenses", { valueAsNumber: true })} />
-          {errors.fixedExpenses && <p style={{ color: "red" }}>{errors.fixedExpenses.message}</p>}
-        </label>
+          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <input type="checkbox" style={{ width: "auto" }} {...register("supportsFamily")} />
+            I support family financially
+          </label>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Calculating..." : "Generate Plan"}
-        </button>
-      </form>
+          <label>
+            Fixed monthly expenses (Rs)
+            <input type="number" {...register("fixedExpenses", { valueAsNumber: true })} />
+          </label>
+          {errors.fixedExpenses && <p style={{ color: "var(--color-danger)", marginTop: "-0.75rem" }}>{errors.fixedExpenses.message}</p>}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+          <button type="submit" disabled={loading} style={{ marginTop: "0.5rem" }}>
+            {loading ? "Calculating" : "Generate plan"}
+          </button>
+        </form>
+      </Card>
+
+      {error && <p style={{ color: "var(--color-danger)", marginTop: "1rem" }}>{error}</p>}
 
       {result && (
         <div style={{ marginTop: "2rem" }}>
-          <h2>Your Monthly Breakdown</h2>
+          <h2>Your monthly breakdown</h2>
 
           {result.reasoning && (
-            <div style={{ background: "#f5f5f5", padding: "0.75rem", marginBottom: "1rem", fontSize: "0.9rem" }}>
-              💡 {result.reasoning}
+            <Callout>
+              {result.reasoning}
               {result.source === "RULE_BASED" && (
-                <span style={{ display: "block", color: "#999", marginTop: "0.25rem" }}>
-                  (Standard allocation - AI temporarily unavailable)
+                <span style={{ display: "block", color: "var(--color-text-muted)", marginTop: "0.35rem", fontSize: "0.82rem" }}>
+                  Standard allocation — AI temporarily unavailable
                 </span>
               )}
-            </div>
+            </Callout>
           )}
 
-          <ul>
-            <li>Necessities: ₹{result.necessitiesAmount}</li>
-            <li>Lifestyle: ₹{result.lifestyleAmount}</li>
-            <li>Savings: ₹{result.savingsAmount}</li>
-            <li>Investments: ₹{result.investmentsAmount}</li>
-            <li>Goals: ₹{result.goalsAmount}</li>
-            <li>Buffer: ₹{result.bufferAmount}</li>
-          </ul>
+          <Card>
+            {[
+              ["Necessities", result.necessitiesAmount],
+              ["Lifestyle", result.lifestyleAmount],
+              ["Savings", result.savingsAmount],
+              ["Investments", result.investmentsAmount],
+              ["Goals", result.goalsAmount],
+              ["Buffer", result.bufferAmount],
+            ].map(([label, amount], idx, arr) => (
+              <div
+                key={label as string}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "0.6rem 0",
+                  borderBottom: idx < arr.length - 1 ? "1px solid var(--color-border)" : "none",
+                }}
+              >
+                <span>{label}</span>
+                <span className="num" style={{ fontWeight: 500 }}>Rs {formatCurrency(amount as number)}</span>
+              </div>
+            ))}
+          </Card>
         </div>
       )}
     </main>
