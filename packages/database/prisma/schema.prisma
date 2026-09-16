@@ -45,7 +45,8 @@ model User {
   emergencyFund    EmergencyFund?
   monthlyPlans     MonthlyPlan[]
   milestoneAchievements MilestoneAchievement[]
-}
+  customMilestones CustomMilestone[]
+  }
 
 model SalaryProfile {
   id                String           @id @default(cuid())
@@ -362,4 +363,17 @@ model EducationArticle {
 
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+}
+
+model CustomMilestone {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  label       String
+  achieved    Boolean   @default(false)
+  achievedAt  DateTime?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

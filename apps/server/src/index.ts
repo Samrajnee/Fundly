@@ -38,6 +38,7 @@ import aiMonthlyReviewRoutes from "./routes/aiMonthlyReview.routes";
 import aiGoalPlannerRoutes from "./routes/aiGoalPlanner.routes";
 import aiWhatIfRoutes from "./routes/aiWhatIf.routes";
 import salaryHistoryRoutes from "./routes/salaryHistory.routes";
+import customMilestoneRoutes from "./routes/customMilestone.routes";
 
 const app = express();
 
@@ -80,7 +81,7 @@ app.use("/api/ai/monthly-review", requireAuth, aiMonthlyReviewRoutes);
 app.use("/api/ai/goal-planner", requireAuth, aiGoalPlannerRoutes);
 app.use("/api/ai/what-if", requireAuth, aiWhatIfRoutes);
 app.use("/api/salary-history", requireAuth, salaryHistoryRoutes);
-
+app.use("/api/custom-milestones", requireAuth, customMilestoneRoutes);
 app.use(errorHandler);
 
 app.listen(env.PORT, () => {
