@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "./auth-context";
 
-const PUBLIC_ROUTES = ["/login", "/signup"];
+const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password"];
 const ONBOARDING_ROUTES = ["/onboarding", "/onboarding/first-salary"];
 
 export function AuthGate({ children }: { children: React.ReactNode }) {

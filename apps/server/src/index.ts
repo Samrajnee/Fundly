@@ -39,6 +39,8 @@ import aiGoalPlannerRoutes from "./routes/aiGoalPlanner.routes";
 import aiWhatIfRoutes from "./routes/aiWhatIf.routes";
 import salaryHistoryRoutes from "./routes/salaryHistory.routes";
 import customMilestoneRoutes from "./routes/customMilestone.routes";
+import accountRoutes from "./routes/account.routes";
+import passwordResetRoutes from "./routes/passwordReset.routes";
 
 const app = express();
 
@@ -82,6 +84,11 @@ app.use("/api/ai/goal-planner", requireAuth, aiGoalPlannerRoutes);
 app.use("/api/ai/what-if", requireAuth, aiWhatIfRoutes);
 app.use("/api/salary-history", requireAuth, salaryHistoryRoutes);
 app.use("/api/custom-milestones", requireAuth, customMilestoneRoutes);
+// Public
+app.use("/api/password-reset", passwordResetRoutes);
+// Protected
+app.use("/api/account", requireAuth, accountRoutes);
+
 app.use(errorHandler);
 
 app.listen(env.PORT, () => {

@@ -36,9 +36,18 @@ export default function DashboardPage() {
     return <main style={{ padding: "2rem" }}>Loading...</main>;
   }
 
+  /*
+   * No active salary plan
+   */
   if (!data.hasActiveSalaryPlan) {
     return (
-      <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
+      <main
+        style={{
+          maxWidth: 560,
+          margin: "0 auto",
+          padding: "2rem",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -47,27 +56,49 @@ export default function DashboardPage() {
           }}
         >
           <p>Welcome, {user?.name}</p>
-          <button
-            onClick={async () => {
-              await logout();
-              router.push("/login");
+
+          <div
+            style={{
+              display: "flex",
+              gap: "0.75rem",
+              alignItems: "center",
             }}
           >
-            Log Out
-          </button>
+            <Link href="/settings">Settings</Link>
+
+            <button
+              onClick={async () => {
+                await logout();
+                router.push("/login");
+              }}
+            >
+              Log Out
+            </button>
+          </div>
         </div>
 
         <h1>Welcome to Fundly</h1>
+
         <p>
           Start by creating your Salary Plan to unlock your dashboard.
         </p>
+
         <Link href="/salary-planner">Go to Salary Planner →</Link>
       </main>
     );
   }
 
+  /*
+   * Active salary plan
+   */
   return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem" }}>
+    <main
+      style={{
+        maxWidth: 720,
+        margin: "0 auto",
+        padding: "2rem",
+      }}
+    >
       <div
         style={{
           display: "flex",
@@ -77,18 +108,29 @@ export default function DashboardPage() {
       >
         <p>Welcome, {user?.name}</p>
 
-        <button
-          onClick={async () => {
-            await logout();
-            router.push("/login");
+        <div
+          style={{
+            display: "flex",
+            gap: "0.75rem",
+            alignItems: "center",
           }}
         >
-          Log Out
-        </button>
+          <Link href="/settings">Settings</Link>
+
+          <button
+            onClick={async () => {
+              await logout();
+              router.push("/login");
+            }}
+          >
+            Log Out
+          </button>
+        </div>
       </div>
 
       <h1>Dashboard</h1>
 
+      {/* Overview Cards */}
       <div
         style={{
           display: "grid",
@@ -97,15 +139,34 @@ export default function DashboardPage() {
           marginTop: "1.5rem",
         }}
       >
-        <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
+        {/* Monthly Salary */}
+        <div
+          style={{
+            border: "1px solid #ccc",
+            padding: "1rem",
+          }}
+        >
           <small>Monthly Salary</small>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+
+          <div
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+            }}
+          >
             ₹{data.monthlySalary}
           </div>
         </div>
 
-        <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
+        {/* Net Worth */}
+        <div
+          style={{
+            border: "1px solid #ccc",
+            padding: "1rem",
+          }}
+        >
           <small>Net Worth</small>
+
           <div
             style={{
               fontSize: "1.5rem",
@@ -117,50 +178,98 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Safe to Spend */}
         {data.safeToSpend && (
-          <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
+          <div
+            style={{
+              border: "1px solid #ccc",
+              padding: "1rem",
+            }}
+          >
             <small>Safe to Spend Today</small>
-            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+
+            <div
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+              }}
+            >
               ₹{data.safeToSpend.dailySafeAmount}
             </div>
+
             <small>
               {data.safeToSpend.daysLeftInMonth} days left this month
             </small>
           </div>
         )}
 
+        {/* Financial Health Score */}
         {data.healthScore && (
-          <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
+          <div
+            style={{
+              border: "1px solid #ccc",
+              padding: "1rem",
+            }}
+          >
             <small>Financial Health Score</small>
-            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-              {data.healthScore.totalScore} / {data.healthScore.maxScore}
+
+            <div
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+              }}
+            >
+              {data.healthScore.totalScore} /{" "}
+              {data.healthScore.maxScore}
             </div>
-            <Link href="/health-score">View breakdown →</Link>
+
+            <Link href="/health-score">
+              View breakdown →
+            </Link>
           </div>
         )}
       </div>
 
+      {/* Monthly Breakdown */}
       {data.breakdown && (
         <div style={{ marginTop: "1.5rem" }}>
           <h2>Your Monthly Breakdown</h2>
-          <Link href="/salary-history">View salary history →</Link>
+
+          <Link href="/salary-history">
+            View salary history →
+          </Link>
+
           <ul>
-            <li>Necessities: ₹{data.breakdown.necessitiesAmount}</li>
-            <li>Lifestyle: ₹{data.breakdown.lifestyleAmount}</li>
-            <li>Savings: ₹{data.breakdown.savingsAmount}</li>
-            <li>Investments: ₹{data.breakdown.investmentsAmount}</li>
-            <li>Goals: ₹{data.breakdown.goalsAmount}</li>
-            <li>Buffer: ₹{data.breakdown.bufferAmount}</li>
+            <li>
+              Necessities: ₹{data.breakdown.necessitiesAmount}
+            </li>
+            <li>
+              Lifestyle: ₹{data.breakdown.lifestyleAmount}
+            </li>
+            <li>
+              Savings: ₹{data.breakdown.savingsAmount}
+            </li>
+            <li>
+              Investments: ₹{data.breakdown.investmentsAmount}
+            </li>
+            <li>
+              Goals: ₹{data.breakdown.goalsAmount}
+            </li>
+            <li>
+              Buffer: ₹{data.breakdown.bufferAmount}
+            </li>
           </ul>
         </div>
       )}
 
+      {/* Goals */}
       <div style={{ marginTop: "1.5rem" }}>
         <h2>Active Goals ({data.activeGoalsCount})</h2>
 
         {data.goalsSummary.length === 0 ? (
           <p>
-            No active goals. <Link href="/goals">Create one →</Link>
+            No active goals.{" "}
+            <Link href="/goals">Create one →</Link>
           </p>
         ) : (
           data.goalsSummary.map((g) => {
@@ -169,7 +278,12 @@ export default function DashboardPage() {
             );
 
             return (
-              <div key={g.id} style={{ marginBottom: "0.75rem" }}>
+              <div
+                key={g.id}
+                style={{
+                  marginBottom: "0.75rem",
+                }}
+              >
                 <div
                   style={{
                     display: "flex",
@@ -204,22 +318,37 @@ export default function DashboardPage() {
         <Link href="/goals">View all goals →</Link>
       </div>
 
+      {/* Emergency Fund */}
       {data.emergencyFundPercentComplete !== null && (
         <div style={{ marginTop: "1.5rem" }}>
           <h2>Emergency Fund</h2>
-          <p>{data.emergencyFundPercentComplete}% complete</p>
-          <Link href="/emergency-fund">View details →</Link>
+
+          <p>
+            {data.emergencyFundPercentComplete}% complete
+          </p>
+
+          <Link href="/emergency-fund">
+            View details →
+          </Link>
         </div>
       )}
 
+      {/* Milestones */}
       <div style={{ marginTop: "1.5rem" }}>
         <h2>Milestones Achieved</h2>
-        <p>{data.recentMilestonesCount} of 8 milestones unlocked</p>
+
+        <p>
+          {data.recentMilestonesCount} of 8 milestones unlocked
+        </p>
+
         <Link href="/milestones">View all →</Link>
       </div>
 
+      {/* Financial Education */}
       <div style={{ marginTop: "1.5rem" }}>
-        <Link href="/education">Financial Education →</Link>
+        <Link href="/education">
+          Financial Education →
+        </Link>
       </div>
     </main>
   );
