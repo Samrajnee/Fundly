@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import { env } from "./config/env";
 import { errorHandler } from "./middlewares/errorHandler";
 import { requireAuth } from "./middlewares/requireAuth";
+import { aiRateLimit } from "./middlewares/aiRateLimit";
+import { generalLimiter, authLimiter } from "./middlewares/generalRateLimit";
 
 import healthRoutes from "./routes/health.routes";
 import authRoutes from "./routes/auth.routes";
@@ -41,6 +43,7 @@ import salaryHistoryRoutes from "./routes/salaryHistory.routes";
 import customMilestoneRoutes from "./routes/customMilestone.routes";
 import accountRoutes from "./routes/account.routes";
 import passwordResetRoutes from "./routes/passwordReset.routes";
+import aiUsageRoutes from "./routes/aiUsage.routes";
 
 const app = express();
 
@@ -49,10 +52,12 @@ app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+app.use("/api", generalLimiter);
 
 // Public routes
 app.use("/api/health", healthRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/password-reset", authLimiter, passwordResetRoutes);
 
 // Protected routes - every one of these now requires a valid session
 app.use("/api/salary", requireAuth, salaryRoutes);
@@ -77,17 +82,15 @@ app.use("/api/spending-insights", requireAuth, spendingInsightsRoutes);
 app.use("/api/dashboard", requireAuth, dashboardRoutes);
 app.use("/api/profile", requireAuth, profileRoutes);
 app.use("/api/education", educationRoutes);
-app.use("/api/ai/expense", requireAuth, aiExpenseRoutes);
-app.use("/api/ai/assistant", requireAuth, aiAssistantRoutes);
-app.use("/api/ai/monthly-review", requireAuth, aiMonthlyReviewRoutes);
-app.use("/api/ai/goal-planner", requireAuth, aiGoalPlannerRoutes);
-app.use("/api/ai/what-if", requireAuth, aiWhatIfRoutes);
+app.use("/api/ai/expense", requireAuth, aiRateLimit, aiExpenseRoutes);
+app.use("/api/ai/assistant", requireAuth, aiRateLimit, aiAssistantRoutes);
+app.use("/api/ai/monthly-review", requireAuth, aiRateLimit, aiMonthlyReviewRoutes);
+app.use("/api/ai/goal-planner", requireAuth, aiRateLimit, aiGoalPlannerRoutes);
+app.use("/api/ai/what-if", requireAuth, aiRateLimit, aiWhatIfRoutes);
 app.use("/api/salary-history", requireAuth, salaryHistoryRoutes);
 app.use("/api/custom-milestones", requireAuth, customMilestoneRoutes);
-// Public
-app.use("/api/password-reset", passwordResetRoutes);
-// Protected
 app.use("/api/account", requireAuth, accountRoutes);
+app.use("/api/ai/usage", requireAuth, aiUsageRoutes);
 
 app.use(errorHandler);
 

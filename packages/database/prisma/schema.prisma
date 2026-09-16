@@ -47,6 +47,7 @@ model User {
   milestoneAchievements MilestoneAchievement[]
   customMilestones CustomMilestone[]
   passwordResetTokens PasswordResetToken[]
+  aiUsageLogs      AiUsageLog[]
   }
 
 model SalaryProfile {
@@ -391,4 +392,27 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+enum AiFeature {
+  SALARY_ALLOCATION
+  EXPENSE_PARSE
+  ASSISTANT
+  MONTHLY_REVIEW
+  GOAL_PLANNER
+  WHAT_IF
+}
+
+model AiUsageLog {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  feature   AiFeature
+  succeeded Boolean   @default(true)
+
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }
