@@ -12,7 +12,7 @@ function hashToken(token: string): string {
 export async function createPasswordResetToken(email: string): Promise<string | null> {
   const user = await prisma.user.findUnique({ where: { email } });
 
-  // Deliberately return null rather than throwing — the controller responds
+  // Deliberately return null rather than throwing - the controller responds
   // identically whether or not the email exists, so this endpoint can't be
   // used to discover which emails have accounts.
   if (!user) return null;

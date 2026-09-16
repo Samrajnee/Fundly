@@ -55,7 +55,7 @@ export async function planGoalFromDescription(userId: string, description: strin
   const targetDate = new Date();
   targetDate.setMonth(targetDate.getMonth() + Math.round(parsed.data.monthsFromNow));
 
-  // Deterministic math — not from Claude.
+  // Deterministic math - not from Claude.
   const monthlyRequired = calculateMonthlyRequired(parsed.data.targetAmount, 0, targetDate);
 
   // Feasibility check against real data: compare required amount to current goalsAmount capacity.
@@ -76,7 +76,7 @@ export async function planGoalFromDescription(userId: string, description: strin
     feasible = totalNeeded <= availableForGoals * 1.5; // allow some headroom before flagging as unrealistic
     reasoning += feasible
       ? ` Your current plan allocates ₹${availableForGoals}/month to goals, which comfortably covers this alongside your existing goals.`
-      : ` Your current plan only allocates ₹${availableForGoals}/month to goals, and you already need ₹${existingCommitment}/month for existing goals — this timeline may be tight. Consider a longer timeframe or increasing your goals allocation.`;
+      : ` Your current plan only allocates ₹${availableForGoals}/month to goals, and you already need ₹${existingCommitment}/month for existing goals - this timeline may be tight. Consider a longer timeframe or increasing your goals allocation.`;
   } else {
     reasoning += " Create a Salary Plan first to check whether this timeline is realistic for your income.";
   }

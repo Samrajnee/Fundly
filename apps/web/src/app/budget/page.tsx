@@ -45,7 +45,7 @@ export default function BudgetPage() {
         );
         setSafeToSpend(sts);
       } catch {
-        // No active salary plan yet — skip Safe to Spend.
+        // No active salary plan yet - skip Safe to Spend.
         setSafeToSpend(null);
       }
     } catch (err) {

@@ -43,7 +43,7 @@ export default function AiGoalPlannerPage() {
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
       <h1>AI Goal Planner</h1>
-      <p>Describe a goal naturally — e.g. "I want to buy a ₹1.5 lakh bike in 12 months."</p>
+      <p>Describe a goal naturally - e.g. "I want to buy a ₹1.5 lakh bike in 12 months."</p>
 
       <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
         <input

@@ -19,7 +19,7 @@ export async function requestPasswordReset(req: Request, res: Response, next: Ne
     if (rawToken) {
       const resetUrl = `${env.CLIENT_URL}/reset-password?token=${rawToken}`;
 
-      // TODO: replace with real email delivery — see note below.
+      // TODO: replace with real email delivery - see note below.
       if (env.NODE_ENV === "development") {
         console.log(`\n[DEV] Password reset link for ${parsed.data.email}:\n${resetUrl}\n`);
       }

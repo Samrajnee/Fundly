@@ -72,7 +72,7 @@ export async function simulateWhatIf(userId: string, question: string): Promise<
     bufferAmount: Number(activePlan.bufferAmount),
   };
 
-  // Deterministic recalculation — Claude only supplied the deltas above.
+  // Deterministic recalculation - Claude only supplied the deltas above.
   const projectedSalary = Number(activePlan.monthlySalary) + parsed.data.salaryDeltaAmount;
   const projectedFixedExpenses = Number(activePlan.necessitiesAmount) + parsed.data.fixedExpenseDeltaAmount;
 

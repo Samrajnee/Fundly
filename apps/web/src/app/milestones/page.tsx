@@ -85,7 +85,7 @@ export default function MilestonesPage() {
 
       <h2 style={{ marginTop: "2rem" }}>Your Own Milestones</h2>
       <p style={{ fontSize: "0.9rem", color: "#666" }}>
-        Anything meaningful to you — mark it done yourself whenever it happens.
+        Anything meaningful to you - mark it done yourself whenever it happens.
       </p>
 
       <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
