@@ -143,7 +143,7 @@ export default function DashboardPage() {
       {data.breakdown && (
         <div style={{ marginTop: "1.5rem" }}>
           <h2>Your Monthly Breakdown</h2>
-
+          <Link href="/salary-history">View salary history →</Link>
           <ul>
             <li>Necessities: ₹{data.breakdown.necessitiesAmount}</li>
             <li>Lifestyle: ₹{data.breakdown.lifestyleAmount}</li>

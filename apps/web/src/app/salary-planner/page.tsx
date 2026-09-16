@@ -54,7 +54,7 @@ export default function SalaryPlannerPage() {
     <main style={{ maxWidth: 480, margin: "0 auto", padding: "2rem" }}>
       <h1>Salary Planner</h1>
       <p>Enter your salary and situation to get your monthly breakdown.</p>
-
+      <Link href="/salary-history">View salary history →</Link>
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <label>
           Monthly Salary (₹)
