@@ -132,21 +132,22 @@ enum RecurrenceFrequency {
 }
 
 model RecurringExpense {
-  id         String              @id @default(cuid())
-  userId     String
-  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String              @id @default(cuid())
+  userId         String
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  categoryId String
-  category   Category            @relation(fields: [categoryId], references: [id])
+  categoryId     String
+  category       Category            @relation(fields: [categoryId], references: [id])
 
-  label      String
-  amount     Decimal             @db.Decimal(12, 2)
-  frequency  RecurrenceFrequency @default(MONTHLY)
-  dueDay     Int?
-  isActive   Boolean             @default(true)
+  label          String
+  amount         Decimal             @db.Decimal(12, 2)
+  frequency      RecurrenceFrequency @default(MONTHLY)
+  dueDay         Int?
+  isActive       Boolean             @default(true)
+  lastPostedDate DateTime?
 
-  createdAt  DateTime            @default(now())
-  updatedAt  DateTime            @updatedAt
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 }
 
 enum GoalStatus {

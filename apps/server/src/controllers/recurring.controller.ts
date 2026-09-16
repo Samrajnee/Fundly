@@ -86,3 +86,14 @@ export async function updateRecurringExpense(req: Request, res: Response, next: 
     next(err);
   }
 }
+
+import { postDueRecurringExpenses } from "../services/recurringPosting.service";
+
+export async function postDueNow(req: Request, res: Response, next: NextFunction) {
+  try {
+    const count = await postDueRecurringExpenses(req.userId!);
+    res.json({ success: true, data: { postedCount: count } });
+  } catch (err) {
+    next(err);
+  }
+}

@@ -24,9 +24,12 @@ export default function RecurringPage() {
   const [recurring, setRecurring] = useState<RecurringExpenseDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset } = useForm<RecurringFormValues>({
-    defaultValues: { frequency: "MONTHLY" },
-  });
+  const { register, handleSubmit, reset } =
+    useForm<RecurringFormValues>({
+      defaultValues: {
+        frequency: "MONTHLY",
+      },
+    });
 
   async function loadData() {
     try {
@@ -34,10 +37,15 @@ export default function RecurringPage() {
         apiGet<Category[]>("/categories"),
         apiGet<RecurringExpenseDTO[]>("/recurring"),
       ]);
+
       setCategories(cats);
       setRecurring(items);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to load data"
+      );
     }
   }
 
@@ -47,24 +55,84 @@ export default function RecurringPage() {
 
   async function onSubmit(values: RecurringFormValues) {
     setError(null);
+
     try {
       await apiPost("/recurring", values);
-      reset({ frequency: "MONTHLY" });
+
+      reset({
+        frequency: "MONTHLY",
+      });
+
       loadData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add recurring expense");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to add recurring expense"
+      );
+    }
+  }
+
+  async function onPostDueNow() {
+    setError(null);
+
+    try {
+      const result = await apiPost<{ postedCount: number }>(
+        "/recurring/post-due",
+        {}
+      );
+
+      alert(
+        `Posted ${result.postedCount} due expense(s) as transactions.`
+      );
+
+      loadData();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to post due expenses"
+      );
     }
   }
 
   return (
-    <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
+    <main
+      style={{
+        maxWidth: 560,
+        margin: "0 auto",
+        padding: "2rem",
+      }}
+    >
       <h1>Recurring Expenses</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "2rem" }}>
+      <button
+        onClick={onPostDueNow}
+        style={{
+          marginBottom: "1rem",
+        }}
+      >
+        Post Due Expenses Now
+      </button>
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.75rem",
+          marginBottom: "2rem",
+        }}
+      >
         <label>
           Category
-          <select {...register("categoryId", { required: true })}>
+          <select
+            {...register("categoryId", {
+              required: true,
+            })}
+          >
             <option value="">Select category</option>
+
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -75,12 +143,24 @@ export default function RecurringPage() {
 
         <label>
           Label (e.g. Rent, Netflix, Car EMI)
-          <input type="text" {...register("label", { required: true })} />
+          <input
+            type="text"
+            {...register("label", {
+              required: true,
+            })}
+          />
         </label>
 
         <label>
           Amount (₹)
-          <input type="number" step="0.01" {...register("amount", { required: true, valueAsNumber: true })} />
+          <input
+            type="number"
+            step="0.01"
+            {...register("amount", {
+              required: true,
+              valueAsNumber: true,
+            })}
+          />
         </label>
 
         <label>
@@ -95,29 +175,73 @@ export default function RecurringPage() {
 
         <label>
           Due Day of Month (optional)
-          <input type="number" min={1} max={31} {...register("dueDay", { valueAsNumber: true })} />
+          <input
+            type="number"
+            min={1}
+            max={31}
+            {...register("dueDay", {
+              valueAsNumber: true,
+            })}
+          />
         </label>
 
-        <button type="submit">Add Recurring Expense</button>
+        <button type="submit">
+          Add Recurring Expense
+        </button>
       </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
 
       <h2>Active Recurring Expenses</h2>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+        }}
+      >
         <thead>
           <tr>
-            <th style={{ textAlign: "left" }}>Label</th>
-            <th style={{ textAlign: "left" }}>Frequency</th>
-            <th style={{ textAlign: "right" }}>Amount</th>
+            <th style={{ textAlign: "left" }}>
+              Label
+            </th>
+
+            <th style={{ textAlign: "left" }}>
+              Frequency
+            </th>
+
+            <th style={{ textAlign: "right" }}>
+              Amount
+            </th>
+
+            <th style={{ textAlign: "right" }}>
+              Last Posted
+            </th>
           </tr>
         </thead>
+
         <tbody>
           {recurring.map((r) => (
             <tr key={r.id}>
               <td>{r.label}</td>
+
               <td>{r.frequency}</td>
-              <td style={{ textAlign: "right" }}>₹{r.amount}</td>
+
+              <td style={{ textAlign: "right" }}>
+                ₹{r.amount}
+              </td>
+
+              <td style={{ textAlign: "right" }}>
+                {r.lastPostedDate
+                  ? new Date(
+                      r.lastPostedDate
+                    ).toLocaleDateString()
+                  : "Never"}
+              </td>
             </tr>
           ))}
         </tbody>

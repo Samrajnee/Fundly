@@ -12,3 +12,9 @@ export interface RecurringExpenseDTO extends CreateRecurringExpenseInput {
   id: string;
   isActive: boolean;
 }
+
+export interface RecurringExpenseDTO extends CreateRecurringExpenseInput {
+  id: string;
+  isActive: boolean;
+  lastPostedDate: string | null;
+}

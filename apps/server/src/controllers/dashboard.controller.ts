@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 import { calculateFinancialHealthScore } from "../services/healthScore.service";
-
-
+import { postDueRecurringExpenses } from "../services/recurringPosting.service";
 
 export async function getDashboard(req: Request, res: Response, next: NextFunction) {
   try {
+    await postDueRecurringExpenses(req.userId!);
+
     const activePlan = await prisma.salaryProfile.findFirst({
       where: { userId: req.userId!, isActive: true },
       orderBy: { createdAt: "desc" },
@@ -49,7 +50,7 @@ export async function getDashboard(req: Request, res: Response, next: NextFuncti
       };
     }
 
-    const healthScoreFull = await calculateFinancialHealthScore();
+    const healthScoreFull = await calculateFinancialHealthScore(req.userId!);
 
     const investments = await prisma.investment.findMany({ where: { userId: req.userId! } });
     const totalInvestments = investments.reduce((sum, i) => sum + Number(i.currentValue), 0);
