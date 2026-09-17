@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { apiPost } from "@/lib/api";
+import { PageHeader } from "@/components/ui/PageHeader";
 
-interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-}
+interface ChatMessage { role: "user" | "assistant"; content: string; }
 
 export default function AskFundlyPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -33,20 +31,21 @@ export default function AskFundlyPage() {
   }
 
   return (
-    <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
-      <h1>Ask Fundly</h1>
-      <p>Ask about your own finances - "Can I afford this?", "Why did I overspend?", "How much should I save for my trip?"</p>
+    <main style={{ maxWidth: 620, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Ask Fundly" description="Ask about your own finances — can I afford this, why did I overspend, how much should I save for a trip." />
 
-      <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem", minHeight: 200 }}>
         {messages.map((m, idx) => (
           <div
             key={idx}
             style={{
               alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-              background: m.role === "user" ? "#e6f0ff" : "#f5f5f5",
-              padding: "0.75rem",
-              borderRadius: "6px",
-              maxWidth: "85%",
+              background: m.role === "user" ? "var(--color-clay-light)" : "var(--color-surface)",
+              border: m.role === "user" ? "none" : "1px solid var(--color-border)",
+              color: m.role === "user" ? "var(--color-clay-dark)" : "var(--color-ink)",
+              padding: "0.75rem 1rem",
+              borderRadius: "var(--radius-md)",
+              maxWidth: "82%",
             }}
           >
             {m.content}
@@ -54,7 +53,7 @@ export default function AskFundlyPage() {
         ))}
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
 
       <div style={{ display: "flex", gap: "0.5rem", marginTop: "1.5rem" }}>
         <input
@@ -62,12 +61,9 @@ export default function AskFundlyPage() {
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && onAsk()}
-          placeholder="Ask a question about your finances..."
-          style={{ flex: 1 }}
+          placeholder="Ask a question about your finances"
         />
-        <button onClick={onAsk} disabled={loading}>
-          {loading ? "..." : "Ask"}
-        </button>
+        <button onClick={onAsk} disabled={loading}>{loading ? "..." : "Ask"}</button>
       </div>
     </main>
   );

@@ -1,70 +1,78 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { apiGet } from "@/lib/api";
 import type { SpendingInsightsDTO } from "@fundly/shared-types";
+import { formatCurrency } from "@/lib/format";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
 
 export default function SpendingInsightsPage() {
   const [data, setData] = useState<SpendingInsightsDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiGet<SpendingInsightsDTO>("/spending-insights")
-      .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
+    apiGet<SpendingInsightsDTO>("/spending-insights").then(setData).catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
   }, []);
 
-  if (error) return <main style={{ padding: "2rem" }}><p style={{ color: "red" }}>{error}</p></main>;
-  if (!data) return <main style={{ padding: "2rem" }}>Loading...</main>;
+  if (error) return <main style={{ padding: "2.5rem" }}><p style={{ color: "var(--color-danger)" }}>{error}</p></main>;
+  if (!data) return <main style={{ padding: "2.5rem" }}>Loading</main>;
 
   return (
-    <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
-      <h1>Spending Insights</h1>
+    <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Spending insights" />
 
-      <p>This month's total spend: ₹{data.currentMonthTotalSpend}</p>
-      <p>Savings rate this month: {data.currentMonthSavingsRate}%</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
+        <Card>
+          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>This month's spend</p>
+          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.6rem", margin: 0 }}>Rs {formatCurrency(data.currentMonthTotalSpend)}</p>
+        </Card>
+        <Card>
+          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>Savings rate</p>
+          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.6rem", margin: 0, color: "var(--color-olive-dark)" }}>{data.currentMonthSavingsRate}%</p>
+        </Card>
+      </div>
 
-      <h2 style={{ marginTop: "1.5rem" }}>Top Categories</h2>
+      <h2>Top categories</h2>
       {data.topCategories.length === 0 ? (
         <p>No transactions recorded this month.</p>
       ) : (
-        data.topCategories.map((c) => (
-          <div key={c.categoryName} style={{ marginBottom: "0.75rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>{c.categoryName}</span>
-              <span>₹{c.amount} ({c.percentOfTotal}%)</span>
+        <Card>
+          {data.topCategories.map((c) => (
+            <div key={c.categoryName} style={{ marginBottom: "0.9rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.3rem" }}>
+                <span>{c.categoryName}</span>
+                <span className="num">Rs {formatCurrency(c.amount)} ({c.percentOfTotal}%)</span>
+              </div>
+              <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden" }}>
+                <div style={{ width: `${c.percentOfTotal}%`, background: "var(--color-clay)", height: "100%" }} />
+              </div>
             </div>
-            <div style={{ background: "#eee", height: "6px", borderRadius: "3px", overflow: "hidden" }}>
-              <div style={{ width: `${c.percentOfTotal}%`, background: "#666", height: "100%" }} />
-            </div>
-          </div>
-        ))
+          ))}
+        </Card>
       )}
 
-      <h2 style={{ marginTop: "1.5rem" }}>Monthly Trend</h2>
+      <h2>Monthly trend</h2>
       {data.monthlyTrend.length === 0 ? (
         <p>Not enough history yet.</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: "left" }}>Month</th>
-              <th style={{ textAlign: "right" }}>Spent</th>
-              <th style={{ textAlign: "right" }}>Change</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.monthlyTrend.map((m) => (
-              <tr key={m.month}>
-                <td>{m.month}</td>
-                <td style={{ textAlign: "right" }}>₹{m.amount}</td>
-                <td style={{ textAlign: "right", color: (m.changePercent ?? 0) > 0 ? "#d33" : "#3a3" }}>
-                  {m.changePercent !== null ? `${m.changePercent > 0 ? "+" : ""}${m.changePercent}%` : "-"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div style={{ height: 220 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data.monthlyTrend}>
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--color-text-muted)" }} />
+              <YAxis tick={{ fontSize: 11, fill: "var(--color-text-muted)" }} />
+              <Tooltip
+                formatter={(v) => `Rs ${formatCurrency(Number(v ?? 0))}`}
+                contentStyle={{
+                  background: "var(--color-surface)",
+                  border: "1px solid var(--color-border)",
+                  borderRadius: "var(--radius-sm)",
+                }}
+/>              <Bar dataKey="amount" fill="var(--color-clay)" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
     </main>
   );

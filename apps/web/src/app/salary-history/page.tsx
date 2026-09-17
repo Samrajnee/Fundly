@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import type { SalaryHistoryEntryDTO } from "@fundly/shared-types";
+import { formatCurrency } from "@/lib/format";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const LIVING_SITUATION_LABELS: Record<string, string> = {
-  WITH_PARENTS: "With Parents",
-  RENTING_ALONE: "Renting Alone",
-  RENTING_SHARED: "Renting Shared",
-  OWN_HOME: "Own Home",
+  WITH_PARENTS: "With parents",
+  RENTING_ALONE: "Renting alone",
+  RENTING_SHARED: "Renting shared",
+  OWN_HOME: "Own home",
 };
 
 export default function SalaryHistoryPage() {
@@ -17,68 +21,57 @@ export default function SalaryHistoryPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiGet<SalaryHistoryEntryDTO[]>("/salary-history")
-      .then(setHistory)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load salary history"));
+    apiGet<SalaryHistoryEntryDTO[]>("/salary-history").then(setHistory).catch((err) => setError(err instanceof Error ? err.message : "Failed to load salary history"));
   }, []);
 
-  if (error) return <main style={{ padding: "2rem" }}><p style={{ color: "red" }}>{error}</p></main>;
+  if (error) return <main style={{ padding: "2.5rem" }}><p style={{ color: "var(--color-danger)" }}>{error}</p></main>;
 
   return (
-    <main style={{ maxWidth: 640, margin: "0 auto", padding: "2rem" }}>
-      <h1>Salary History</h1>
-      <p>Every salary plan you've created, most recent first.</p>
+    <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Salary history" description="Every salary plan you've created, most recent first." />
 
       {history.length === 0 ? (
-        <p>
-          No salary plans yet. <Link href="/salary-planner">Create one →</Link>
-        </p>
+        <EmptyState message="No salary plans yet." actionLabel="Create one" actionHref="/salary-planner" />
       ) : (
-        <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           {history.map((entry) => (
-            <div
-              key={entry.id}
-              style={{
-                border: entry.isActive ? "2px solid #3a3" : "1px solid #ccc",
-                padding: "1rem",
-              }}
-            >
+            <Card key={entry.id} style={entry.isActive ? { borderColor: "var(--color-olive)" } : undefined}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <strong style={{ fontSize: "1.2rem" }}>₹{entry.monthlySalary}</strong>
-                {entry.isActive && <span style={{ color: "#3a3", fontSize: "0.85rem" }}>Active</span>}
+                <span className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem" }}>
+                  Rs {formatCurrency(entry.monthlySalary)}
+                </span>
+                {entry.isActive && <span style={{ fontSize: "0.78rem", color: "var(--color-olive-dark)" }}>Active</span>}
               </div>
 
-              <small style={{ color: "#666" }}>
-                {new Date(entry.effectiveFrom).toLocaleDateString()} · {LIVING_SITUATION_LABELS[entry.livingSituation]}
-                {entry.supportsFamily ? " · Supports family" : ""}
-              </small>
+              <p style={{ fontSize: "0.85rem", margin: "0.25rem 0 0.75rem" }}>
+                {new Date(entry.effectiveFrom).toLocaleDateString()} \u00b7 {LIVING_SITUATION_LABELS[entry.livingSituation]}
+                {entry.supportsFamily ? " \u00b7 Supports family" : ""}
+              </p>
 
               {entry.changeFromPrevious && (
-                <p style={{ margin: "0.5rem 0", color: entry.changeFromPrevious.salaryDelta >= 0 ? "#3a3" : "#d33" }}>
-                  {entry.changeFromPrevious.salaryDelta >= 0 ? "+" : ""}₹{entry.changeFromPrevious.salaryDelta} (
-                  {entry.changeFromPrevious.salaryDeltaPercent >= 0 ? "+" : ""}
-                  {entry.changeFromPrevious.salaryDeltaPercent}%) from previous plan
+                <p style={{ margin: "0 0 0.75rem", color: entry.changeFromPrevious.salaryDelta >= 0 ? "var(--color-olive-dark)" : "var(--color-danger)" }}>
+                  {entry.changeFromPrevious.salaryDelta >= 0 ? "+" : ""}Rs {formatCurrency(entry.changeFromPrevious.salaryDelta)} ({entry.changeFromPrevious.salaryDeltaPercent >= 0 ? "+" : ""}{entry.changeFromPrevious.salaryDeltaPercent}%) from previous plan
                 </p>
               )}
 
-              <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "0.5rem", fontSize: "0.9rem" }}>
+              <table>
                 <tbody>
-                  <tr><td>Necessities</td><td style={{ textAlign: "right" }}>₹{entry.necessitiesAmount}</td></tr>
-                  <tr><td>Lifestyle</td><td style={{ textAlign: "right" }}>₹{entry.lifestyleAmount}</td></tr>
-                  <tr><td>Savings</td><td style={{ textAlign: "right" }}>₹{entry.savingsAmount}</td></tr>
-                  <tr><td>Investments</td><td style={{ textAlign: "right" }}>₹{entry.investmentsAmount}</td></tr>
-                  <tr><td>Goals</td><td style={{ textAlign: "right" }}>₹{entry.goalsAmount}</td></tr>
-                  <tr><td>Buffer</td><td style={{ textAlign: "right" }}>₹{entry.bufferAmount}</td></tr>
+                  {[["Necessities", entry.necessitiesAmount], ["Lifestyle", entry.lifestyleAmount], ["Savings", entry.savingsAmount], ["Investments", entry.investmentsAmount], ["Goals", entry.goalsAmount], ["Buffer", entry.bufferAmount]].map(([l, v]) => (
+                    <tr key={l as string}>
+                      <td style={{ border: "none", padding: "0.2rem 0" }}>{l}</td>
+                      <td className="num" style={{ border: "none", padding: "0.2rem 0", textAlign: "right" }}>Rs {formatCurrency(v as number)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
-      <div style={{ marginTop: "1.5rem" }}>
-        <Link href="/salary-planner">+ Create a new salary plan →</Link>
-      </div>
+      <p style={{ marginTop: "1.5rem" }}>
+        <Link href="/salary-planner">Create a new salary plan</Link>
+      </p>
     </main>
   );
 }

@@ -3,47 +3,44 @@
 import { useEffect, useState } from "react";
 import { apiGet } from "@/lib/api";
 import type { FinancialHealthScoreDTO } from "@fundly/shared-types";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
 
 export default function HealthScorePage() {
   const [score, setScore] = useState<FinancialHealthScoreDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiGet<FinancialHealthScoreDTO>("/health-score")
-      .then(setScore)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load score"));
+    apiGet<FinancialHealthScoreDTO>("/health-score").then(setScore).catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
   }, []);
 
-  if (error) return <main style={{ padding: "2rem" }}><p style={{ color: "red" }}>{error}</p></main>;
-  if (!score) return <main style={{ padding: "2rem" }}>Loading...</main>;
+  if (error) return <main style={{ padding: "2.5rem" }}><p style={{ color: "var(--color-danger)" }}>{error}</p></main>;
+  if (!score) return <main style={{ padding: "2.5rem" }}>Loading</main>;
 
   const percent = Math.round((score.totalScore / score.maxScore) * 100);
 
   return (
-    <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
-      <h1>Financial Health Score</h1>
+    <main style={{ maxWidth: 620, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Financial health score" />
 
-      <div style={{ textAlign: "center", margin: "2rem 0" }}>
-        <div style={{ fontSize: "3rem", fontWeight: "bold" }}>
+      <Card style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+        <p style={{ fontFamily: "var(--font-heading)", fontSize: "2.6rem", fontWeight: 500, margin: 0, color: "var(--color-clay-dark)" }}>
           {score.totalScore} / {score.maxScore}
-        </div>
-        <p>{percent}%</p>
-      </div>
+        </p>
+        <p style={{ margin: "0.25rem 0 0" }}>{percent}%</p>
+      </Card>
 
       {score.components.map((c) => (
-        <div key={c.label} style={{ marginBottom: "1.25rem" }}>
-          <strong>{c.label}</strong> - {c.score}/{c.maxScore}
-          <div style={{ background: "#eee", height: "8px", borderRadius: "4px", overflow: "hidden", margin: "0.5rem 0" }}>
-            <div
-              style={{
-                width: `${(c.score / c.maxScore) * 100}%`,
-                background: c.score / c.maxScore >= 0.7 ? "#3a3" : c.score / c.maxScore >= 0.4 ? "#e90" : "#d33",
-                height: "100%",
-              }}
-            />
+        <Card key={c.label} style={{ marginBottom: "0.75rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+            <strong>{c.label}</strong>
+            <span className="num">{c.score}/{c.maxScore}</span>
           </div>
-          <small>{c.message}</small>
-        </div>
+          <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden", marginBottom: "0.5rem" }}>
+            <div style={{ width: `${(c.score / c.maxScore) * 100}%`, background: c.score / c.maxScore >= 0.7 ? "var(--color-olive)" : c.score / c.maxScore >= 0.4 ? "#c98a2e" : "var(--color-danger)", height: "100%" }} />
+          </div>
+          <p style={{ margin: 0, fontSize: "0.88rem" }}>{c.message}</p>
+        </Card>
       ))}
     </main>
   );

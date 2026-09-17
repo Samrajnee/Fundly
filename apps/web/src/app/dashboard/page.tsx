@@ -114,9 +114,9 @@ export default function DashboardPage() {
             Rs {formatCurrency(safeToSpendAnimated)}
           </p>
           <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", margin: "0.5rem 0 0" }}>
-            {data.safeToSpend.daysLeftInMonth} days left this month · Rs{" "}
-            {formatCurrency(data.safeToSpend.lifestyleBudgetRemaining)} lifestyle budget remaining
-          </p>
+  {data.safeToSpend.daysLeftInMonth === 1 ? "Today is the last day of the month" : `${data.safeToSpend.daysLeftInMonth} days left this month`} &middot; Rs{" "}
+  {formatCurrency(data.safeToSpend.lifestyleBudgetRemaining)} lifestyle budget remaining
+</p>
         </div>
       )}
 

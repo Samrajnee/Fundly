@@ -4,266 +4,100 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { apiGet, apiPost, apiDelete } from "@/lib/api";
 import type { DebtDTO, DebtType } from "@fundly/shared-types";
+import { formatCurrency } from "@/lib/format";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface DebtFormValues {
-  type: DebtType;
-  lender: string;
-  principalAmount: number;
-  outstandingAmount: number;
-  interestRate: number;
-  emiAmount: number;
-  tenureMonths: number;
-  startDate: string;
+  type: DebtType; lender: string; principalAmount: number; outstandingAmount: number;
+  interestRate: number; emiAmount: number; tenureMonths: number; startDate: string;
 }
 
 export default function DebtsPage() {
   const [debts, setDebts] = useState<DebtDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  const { register, handleSubmit, reset } = useForm<DebtFormValues>({
-    defaultValues: {
-      type: "PERSONAL_LOAN",
-    },
-  });
+  const { register, handleSubmit, reset } = useForm<DebtFormValues>({ defaultValues: { type: "PERSONAL_LOAN" } });
 
   async function loadData() {
-    try {
-      const data = await apiGet<DebtDTO[]>("/debts");
-      setDebts(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load debts"
-      );
-    }
+    try { setDebts(await apiGet<DebtDTO[]>("/debts")); }
+    catch (err) { setError(err instanceof Error ? err.message : "Failed to load debts"); }
   }
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   async function onSubmit(values: DebtFormValues) {
     setError(null);
-
-    try {
-      await apiPost("/debts", values);
-      reset({ type: "PERSONAL_LOAN" });
-      loadData();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to add debt"
-      );
-    }
+    try { await apiPost("/debts", values); reset({ type: "PERSONAL_LOAN" }); loadData(); }
+    catch (err) { setError(err instanceof Error ? err.message : "Failed to add debt"); }
   }
 
-  async function onDelete(debtId: string) {
-    if (!confirm("Delete this debt entry?")) return;
-
-    setError(null);
-
-    try {
-      await apiDelete(`/debts/${debtId}`);
-      loadData();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to delete"
-      );
-    }
+  async function onDelete(id: string) {
+    if (!confirm("Delete this debt?")) return;
+    try { await apiDelete(`/debts/${id}`); loadData(); }
+    catch (err) { setError(err instanceof Error ? err.message : "Failed to delete"); }
   }
 
-  const totalEmi = debts.reduce(
-    (sum, d) => sum + d.emiAmount,
-    0
-  );
-
-  const totalOutstanding = debts.reduce(
-    (sum, d) => sum + d.outstandingAmount,
-    0
-  );
+  const totalEmi = debts.reduce((sum, d) => sum + d.emiAmount, 0);
+  const totalOutstanding = debts.reduce((sum, d) => sum + d.outstandingAmount, 0);
 
   return (
-    <main
-      style={{
-        maxWidth: 560,
-        margin: "0 auto",
-        padding: "2rem",
-      }}
-    >
-      <h1>Debt & EMI Planner</h1>
+    <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Debt and EMI planner" />
 
-      <div
-        style={{
-          border: "1px solid #ccc",
-          padding: "1rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <p>Total Monthly EMI: ₹{totalEmi.toFixed(2)}</p>
-        <p>Total Outstanding: ₹{totalOutstanding.toFixed(2)}</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
+        <Card>
+          <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>Monthly EMI</p>
+          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem", margin: 0 }}>Rs {formatCurrency(totalEmi)}</p>
+        </Card>
+        <Card>
+          <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>Outstanding</p>
+          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem", margin: 0 }}>Rs {formatCurrency(totalOutstanding)}</p>
+        </Card>
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.75rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <label>
-          Type
-          <select {...register("type")}>
-            <option value="CREDIT_CARD">Credit Card</option>
-            <option value="PERSONAL_LOAN">Personal Loan</option>
-            <option value="HOME_LOAN">Home Loan</option>
-            <option value="VEHICLE_LOAN">Vehicle Loan</option>
-            <option value="EDUCATION_LOAN">Education Loan</option>
-            <option value="OTHER">Other</option>
-          </select>
-        </label>
+      <Card style={{ marginBottom: "1.5rem" }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <label>Type
+            <select {...register("type")}>
+              <option value="CREDIT_CARD">Credit card</option><option value="PERSONAL_LOAN">Personal loan</option><option value="HOME_LOAN">Home loan</option><option value="VEHICLE_LOAN">Vehicle loan</option><option value="EDUCATION_LOAN">Education loan</option><option value="OTHER">Other</option>
+            </select>
+          </label>
+          <label>Lender<input type="text" {...register("lender", { required: true })} /></label>
+          <label>Principal amount (Rs)<input type="number" step="0.01" {...register("principalAmount", { required: true, valueAsNumber: true })} /></label>
+          <label>Outstanding amount (Rs)<input type="number" step="0.01" {...register("outstandingAmount", { required: true, valueAsNumber: true })} /></label>
+          <label>Interest rate (% p.a.)<input type="number" step="0.01" {...register("interestRate", { required: true, valueAsNumber: true })} /></label>
+          <label>EMI amount (Rs)<input type="number" step="0.01" {...register("emiAmount", { required: true, valueAsNumber: true })} /></label>
+          <label>Tenure (months)<input type="number" {...register("tenureMonths", { required: true, valueAsNumber: true })} /></label>
+          <label>Start date<input type="date" {...register("startDate", { required: true })} /></label>
+          <button type="submit">Add debt</button>
+        </form>
+      </Card>
 
-        <label>
-          Lender
-          <input
-            type="text"
-            {...register("lender", { required: true })}
-          />
-        </label>
+      {error && <p style={{ color: "var(--color-danger)", marginBottom: "1rem" }}>{error}</p>}
 
-        <label>
-          Principal Amount (₹)
-          <input
-            type="number"
-            step="0.01"
-            {...register("principalAmount", {
-              required: true,
-              valueAsNumber: true,
-            })}
-          />
-        </label>
-
-        <label>
-          Outstanding Amount (₹)
-          <input
-            type="number"
-            step="0.01"
-            {...register("outstandingAmount", {
-              required: true,
-              valueAsNumber: true,
-            })}
-          />
-        </label>
-
-        <label>
-          Interest Rate (% p.a.)
-          <input
-            type="number"
-            step="0.01"
-            {...register("interestRate", {
-              required: true,
-              valueAsNumber: true,
-            })}
-          />
-        </label>
-
-        <label>
-          EMI Amount (₹)
-          <input
-            type="number"
-            step="0.01"
-            {...register("emiAmount", {
-              required: true,
-              valueAsNumber: true,
-            })}
-          />
-        </label>
-
-        <label>
-          Tenure (months)
-          <input
-            type="number"
-            {...register("tenureMonths", {
-              required: true,
-              valueAsNumber: true,
-            })}
-          />
-        </label>
-
-        <label>
-          Start Date
-          <input
-            type="date"
-            {...register("startDate", {
-              required: true,
-            })}
-          />
-        </label>
-
-        <button type="submit">Add Debt</button>
-      </form>
-
-      {error && (
-        <p style={{ color: "red" }}>
-          {error}
-        </p>
-      )}
-
-      <h2>Your Debts</h2>
-
-      {debts.map((d) => (
-        <div
-          key={d.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
-          <strong>
-            {d.lender}
-          </strong>{" "}
-          - {d.type}
-
-          <div
-            style={{
-              background: "#eee",
-              height: "8px",
-              borderRadius: "4px",
-              overflow: "hidden",
-              margin: "0.5rem 0",
-            }}
-          >
-            <div
-              style={{
-                width: `${d.percentPaidOff}%`,
-                background: "#3a3",
-                height: "100%",
-              }}
-            />
-          </div>
-
-          <p>{d.percentPaidOff}% paid off</p>
-
-          <p>
-            Outstanding: ₹{d.outstandingAmount} of ₹
-            {d.principalAmount}
-          </p>
-
-          <p>
-            EMI: ₹{d.emiAmount}/month at {d.interestRate}% interest
-          </p>
-
-          <button
-            onClick={() => onDelete(d.id)}
-            style={{
-              color: "#d33",
-              marginTop: "0.5rem",
-            }}
-          >
-            Delete
-          </button>
+      <h2>Your debts</h2>
+      {debts.length === 0 ? (
+        <EmptyState message="No debts recorded." />
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          {debts.map((d) => (
+            <Card key={d.id}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <strong>{d.lender}</strong>
+                <button onClick={() => onDelete(d.id)} style={{ background: "transparent", color: "var(--color-danger)", border: "none", padding: 0, fontSize: "0.8rem" }}>Delete</button>
+              </div>
+              <p style={{ fontSize: "0.85rem", margin: "0.15rem 0 0.6rem" }}>{d.type}</p>
+              <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden", marginBottom: "0.5rem" }}>
+                <div style={{ width: `${d.percentPaidOff}%`, background: "var(--color-olive)", height: "100%" }} />
+              </div>
+              <p style={{ margin: "0 0 0.2rem", fontSize: "0.85rem" }}>{d.percentPaidOff}% paid off</p>
+              <p className="num" style={{ margin: "0 0 0.2rem" }}>Rs {formatCurrency(d.outstandingAmount)} of Rs {formatCurrency(d.principalAmount)}</p>
+              <p className="num" style={{ margin: 0, fontSize: "0.85rem" }}>Rs {formatCurrency(d.emiAmount)}/month at {d.interestRate}% interest</p>
+            </Card>
+          ))}
         </div>
-      ))}
+      )}
     </main>
   );
 }

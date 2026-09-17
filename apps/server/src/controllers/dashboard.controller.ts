@@ -36,10 +36,7 @@ export async function getDashboard(req: Request, res: Response, next: NextFuncti
       });
       const spent = Number(spentResult._sum.amount ?? 0);
       const lifestyleBudgetRemaining = Math.max(lifestylePool - spent, 0);
-      const daysLeftInMonth = Math.max(
-        new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1,
-        1
-      );
+      const daysLeftInMonth = Math.max(new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate(), 1);
       const dailySafeAmount = lifestyleBudgetRemaining / daysLeftInMonth;
 
       safeToSpend = {

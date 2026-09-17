@@ -2,131 +2,72 @@
 
 import { useEffect, useState } from "react";
 import { apiGet } from "@/lib/api";
-import type { MonthlyReviewDTO } from "@fundly/shared-types";
-import type { AIMonthlyReviewDTO } from "@fundly/shared-types";
+import type { MonthlyReviewDTO, AIMonthlyReviewDTO } from "@fundly/shared-types";
+import { formatCurrency } from "@/lib/format";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Callout } from "@/components/ui/Callout";
 
 export default function MonthlyReviewPage() {
   const [review, setReview] = useState<MonthlyReviewDTO | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [aiReview, setAiReview] = useState<AIMonthlyReviewDTO | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiGet<AIMonthlyReviewDTO>("/ai/monthly-review")
-      .then(setAiReview)
-      .catch(() => setAiReview(null));
+    apiGet<MonthlyReviewDTO>("/monthly-review").then(setReview).catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
+    apiGet<AIMonthlyReviewDTO>("/ai/monthly-review").then(setAiReview).catch(() => setAiReview(null));
   }, []);
 
-  useEffect(() => {
-    apiGet<MonthlyReviewDTO>("/monthly-review")
-      .then(setReview)
-      .catch((err) =>
-        setError(err instanceof Error ? err.message : "Failed to load")
-      );
-  }, []);
-
-  if (error) {
-    return (
-      <main style={{ padding: "2rem" }}>
-        <p style={{ color: "red" }}>{error}</p>
-      </main>
-    );
-  }
-
-  if (!review) {
-    return <main style={{ padding: "2rem" }}>Loading...</main>;
-  }
+  if (error) return <main style={{ padding: "2.5rem" }}><p style={{ color: "var(--color-danger)" }}>{error}</p></main>;
+  if (!review) return <main style={{ padding: "2.5rem" }}>Loading</main>;
 
   return (
-    <main style={{ maxWidth: 620, margin: "0 auto", padding: "2rem" }}>
-      <h1>Monthly Review</h1>
+    <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Monthly review" description={`Savings rate this month: ${review.savingsRateActual}%`} />
 
       {aiReview && aiReview.source === "AI" && (
-        <div
-          style={{
-            background: "#f5f5f5",
-            padding: "1rem",
-            marginBottom: "1.5rem",
-          }}
-        >
-          <p>{aiReview.summary}</p>
-
+        <Callout>
+          <p style={{ margin: "0 0 0.5rem" }}>{aiReview.summary}</p>
           {aiReview.highlights.length > 0 && (
             <>
               <strong>Highlights</strong>
-              <ul>
-                {aiReview.highlights.map((h, i) => (
-                  <li key={i}>{h}</li>
-                ))}
-              </ul>
+              <ul style={{ margin: "0.25rem 0 0.5rem" }}>{aiReview.highlights.map((h, i) => <li key={i}>{h}</li>)}</ul>
             </>
           )}
-
           {aiReview.areasToImprove.length > 0 && (
             <>
               <strong>Could improve</strong>
-              <ul>
-                {aiReview.areasToImprove.map((a, i) => (
-                  <li key={i}>{a}</li>
-                ))}
-              </ul>
+              <ul style={{ margin: "0.25rem 0 0" }}>{aiReview.areasToImprove.map((a, i) => <li key={i}>{a}</li>)}</ul>
             </>
           )}
-        </div>
+        </Callout>
       )}
 
-      <p>
-        Savings rate this month: {review.savingsRateActual}%
-      </p>
-
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          marginTop: "1.5rem",
-        }}
-      >
-        <thead>
-          <tr>
-            <th style={{ textAlign: "left" }}>Category</th>
-            <th style={{ textAlign: "right" }}>Planned</th>
-            <th style={{ textAlign: "right" }}>Actual</th>
-            <th style={{ textAlign: "right" }}>Variance</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {review.comparisons.map((c) => (
-            <tr key={c.label}>
-              <td>{c.label}</td>
-              <td style={{ textAlign: "right" }}>₹{c.planned}</td>
-              <td style={{ textAlign: "right" }}>₹{c.actual}</td>
-              <td
-                style={{
-                  textAlign: "right",
-                  color: c.variance > 0 ? "#d33" : "#3a3",
-                }}
-              >
-                {c.variance > 0 ? "+" : ""}₹{c.variance} (
-                {c.variancePercent}%)
-              </td>
+      <Card style={{ padding: 0 }}>
+        <table>
+          <thead><tr><th style={{ padding: "0.75rem 1rem" }}>Category</th><th style={{ textAlign: "right" }}>Planned</th><th style={{ textAlign: "right" }}>Actual</th><th style={{ textAlign: "right", paddingRight: "1rem" }}>Variance</th></tr></thead>
+          <tbody>
+            {review.comparisons.map((c) => (
+              <tr key={c.label}>
+                <td style={{ paddingLeft: "1rem" }}>{c.label}</td>
+                <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(c.planned)}</td>
+                <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(c.actual)}</td>
+                <td className="num" style={{ textAlign: "right", paddingRight: "1rem", color: c.variance > 0 ? "var(--color-danger)" : "var(--color-olive-dark)" }}>
+                  {c.variance > 0 ? "+" : ""}Rs {formatCurrency(c.variance)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr style={{ fontWeight: 600 }}>
+              <td style={{ paddingLeft: "1rem", borderTop: "2px solid var(--color-border)" }}>Total</td>
+              <td className="num" style={{ textAlign: "right", borderTop: "2px solid var(--color-border)" }}>Rs {formatCurrency(review.totalPlanned)}</td>
+              <td className="num" style={{ textAlign: "right", borderTop: "2px solid var(--color-border)" }}>Rs {formatCurrency(review.totalActual)}</td>
+              <td style={{ borderTop: "2px solid var(--color-border)" }}></td>
             </tr>
-          ))}
-        </tbody>
-
-        <tfoot>
-          <tr
-            style={{
-              fontWeight: "bold",
-              borderTop: "2px solid #ccc",
-            }}
-          >
-            <td>Total</td>
-            <td style={{ textAlign: "right" }}>₹{review.totalPlanned}</td>
-            <td style={{ textAlign: "right" }}>₹{review.totalActual}</td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+          </tfoot>
+        </table>
+      </Card>
     </main>
   );
 }

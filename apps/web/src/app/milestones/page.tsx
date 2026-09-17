@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
 import type { MilestoneDTO, CustomMilestoneDTO } from "@fundly/shared-types";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
 
 export default function MilestonesPage() {
   const [milestones, setMilestones] = useState<MilestoneDTO[]>([]);
@@ -12,123 +14,68 @@ export default function MilestonesPage() {
 
   async function loadData() {
     try {
-      const [builtIn, custom] = await Promise.all([
-        apiGet<MilestoneDTO[]>("/milestones"),
-        apiGet<CustomMilestoneDTO[]>("/custom-milestones"),
-      ]);
-      setMilestones(builtIn);
-      setCustomMilestones(custom);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load milestones");
-    }
+      const [builtIn, custom] = await Promise.all([apiGet<MilestoneDTO[]>("/milestones"), apiGet<CustomMilestoneDTO[]>("/custom-milestones")]);
+      setMilestones(builtIn); setCustomMilestones(custom);
+    } catch (err) { setError(err instanceof Error ? err.message : "Failed to load milestones"); }
   }
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   async function onAddCustom() {
     if (!newLabel.trim()) return;
-    try {
-      await apiPost("/custom-milestones", { label: newLabel });
-      setNewLabel("");
-      loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add milestone");
-    }
+    try { await apiPost("/custom-milestones", { label: newLabel }); setNewLabel(""); loadData(); }
+    catch (err) { setError(err instanceof Error ? err.message : "Failed to add milestone"); }
   }
 
   async function onToggle(id: string) {
-    try {
-      await apiPatch(`/custom-milestones/${id}/toggle`, {});
-      loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update milestone");
-    }
+    try { await apiPatch(`/custom-milestones/${id}/toggle`, {}); loadData(); }
+    catch (err) { setError(err instanceof Error ? err.message : "Failed to update milestone"); }
   }
 
   async function onDelete(id: string) {
     if (!confirm("Delete this milestone?")) return;
-    try {
-      await apiDelete(`/custom-milestones/${id}`);
-      loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete milestone");
-    }
+    try { await apiDelete(`/custom-milestones/${id}`); loadData(); }
+    catch (err) { setError(err instanceof Error ? err.message : "Failed to delete milestone"); }
   }
 
-  if (error) return <main style={{ padding: "2rem" }}><p style={{ color: "red" }}>{error}</p></main>;
+  if (error) return <main style={{ padding: "2.5rem" }}><p style={{ color: "var(--color-danger)" }}>{error}</p></main>;
 
   return (
-    <main style={{ maxWidth: 560, margin: "0 auto", padding: "2rem" }}>
-      <h1>Financial Milestones</h1>
+    <main style={{ maxWidth: 620, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="Financial milestones" />
 
-      <h2>Milestones</h2>
-      {milestones.map((m) => (
-        <div
-          key={m.key}
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "0.75rem 0",
-            borderBottom: "1px solid #eee",
-            opacity: m.achieved ? 1 : 0.5,
-          }}
-        >
-          <span>{m.achieved ? "✓" : "○"} {m.label}</span>
-          {m.achieved && m.achievedAt && (
-            <small>{new Date(m.achievedAt).toLocaleDateString()}</small>
-          )}
-        </div>
-      ))}
+      <Card style={{ marginBottom: "1.5rem" }}>
+        {milestones.map((m, idx) => (
+          <div key={m.key} style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: idx < milestones.length - 1 ? "1px solid var(--color-border)" : "none", opacity: m.achieved ? 1 : 0.5 }}>
+            <span>{m.achieved ? "Achieved" : "Not yet"} \u2014 {m.label}</span>
+            {m.achieved && m.achievedAt && <small>{new Date(m.achievedAt).toLocaleDateString()}</small>}
+          </div>
+        ))}
+      </Card>
 
-      <h2 style={{ marginTop: "2rem" }}>Your Own Milestones</h2>
-      <p style={{ fontSize: "0.9rem", color: "#666" }}>
-        Anything meaningful to you - mark it done yourself whenever it happens.
-      </p>
+      <h2>Your own milestones</h2>
+      <p>Anything meaningful to you \u2014 mark it done yourself whenever it happens.</p>
 
-      <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
-        <input
-          type="text"
-          value={newLabel}
-          onChange={(e) => setNewLabel(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onAddCustom()}
-          placeholder="e.g. Paid off laptop EMI"
-          style={{ flex: 1 }}
-        />
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+        <input type="text" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => e.key === "Enter" && onAddCustom()} placeholder="Paid off laptop EMI" />
         <button onClick={onAddCustom}>Add</button>
       </div>
 
-      <div style={{ marginTop: "1rem" }}>
-        {customMilestones.length === 0 ? (
-          <p style={{ color: "#999" }}>No custom milestones yet.</p>
-        ) : (
-          customMilestones.map((m) => (
-            <div
-              key={m.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "0.75rem 0",
-                borderBottom: "1px solid #eee",
-              }}
-            >
-              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", opacity: m.achieved ? 1 : 0.6 }}>
-                <input type="checkbox" checked={m.achieved} onChange={() => onToggle(m.id)} />
+      {customMilestones.length === 0 ? (
+        <p style={{ color: "var(--color-text-muted)" }}>No custom milestones yet.</p>
+      ) : (
+        <Card>
+          {customMilestones.map((m, idx) => (
+            <div key={m.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.6rem 0", borderBottom: idx < customMilestones.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", margin: 0, opacity: m.achieved ? 1 : 0.7 }}>
+                <input type="checkbox" style={{ width: "auto" }} checked={m.achieved} onChange={() => onToggle(m.id)} />
                 {m.label}
-                {m.achieved && m.achievedAt && (
-                  <small style={{ marginLeft: "0.5rem" }}>{new Date(m.achievedAt).toLocaleDateString()}</small>
-                )}
               </label>
-              <button onClick={() => onDelete(m.id)} style={{ color: "#d33" }}>
-                Delete
-              </button>
+              <button onClick={() => onDelete(m.id)} style={{ background: "transparent", color: "var(--color-danger)", border: "1px solid var(--color-danger-light)" }}>Delete</button>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </Card>
+      )}
     </main>
   );
 }

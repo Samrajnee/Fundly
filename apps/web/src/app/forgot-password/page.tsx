@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { apiPost } from "@/lib/api";
+import { AuthShell } from "@/components/ui/AuthShell";
 
-interface FormValues {
-  email: string;
-}
+interface FormValues { email: string; }
 
 export default function ForgotPasswordPage() {
   const [message, setMessage] = useState<string | null>(null);
@@ -25,24 +23,14 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main style={{ maxWidth: 400, margin: "4rem auto", padding: "2rem" }}>
-      <h1>Forgot your password?</h1>
-      <p>Enter your email and we'll send you a reset link.</p>
-
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-        <label>
-          Email
-          <input type="email" {...register("email", { required: true })} />
-        </label>
-        <button type="submit">Send Reset Link</button>
+    <AuthShell title="Forgot your password?" description="Enter your email and we'll send you a reset link.">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <label>Email<input type="email" {...register("email", { required: true })} /></label>
+        <button type="submit" style={{ width: "100%" }}>Send reset link</button>
       </form>
-
-      {message && <p style={{ color: "#3a3" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <p style={{ marginTop: "1rem" }}>
-        <Link href="/login">Back to login</Link>
-      </p>
-    </main>
+      {message && <p style={{ color: "var(--color-olive-dark)" }}>{message}</p>}
+      {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
+      <p><a href="/login">Back to login</a></p>
+    </AuthShell>
   );
 }

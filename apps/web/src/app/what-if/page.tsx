@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { apiPost } from "@/lib/api";
 import type { WhatIfResultDTO } from "@fundly/shared-types";
+import { formatCurrency } from "@/lib/format";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
 
 export default function WhatIfPage() {
   const [question, setQuestion] = useState("");
@@ -14,57 +17,47 @@ export default function WhatIfPage() {
     if (!question.trim()) return;
     setLoading(true);
     setError(null);
-    try {
-      const data = await apiPost<WhatIfResultDTO>("/ai/what-if/simulate", { question });
-      setResult(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't run that simulation");
-    } finally {
-      setLoading(false);
-    }
+    try { setResult(await apiPost<WhatIfResultDTO>("/ai/what-if/simulate", { question })); }
+    catch (err) { setError(err instanceof Error ? err.message : "Couldn't run that simulation"); }
+    finally { setLoading(false); }
   }
 
   return (
-    <main style={{ maxWidth: 620, margin: "0 auto", padding: "2rem" }}>
-      <h1>What-If Simulator</h1>
-      <p>Try: "What if my salary increases by ₹10,000?" or "What if I move to Bangalore and pay ₹20,000 rent?"</p>
+    <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
+      <PageHeader title="What-if simulator" description='Try: "What if my salary increases by Rs 10,000?" or "What if I increase my SIP by Rs 3,000?"' />
 
-      <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-        <input
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          style={{ flex: 1 }}
-          placeholder="Ask a hypothetical..."
-        />
-        <button onClick={onSimulate} disabled={loading}>
-          {loading ? "Simulating..." : "Simulate"}
-        </button>
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
+        <input type="text" value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Ask a hypothetical" />
+        <button onClick={onSimulate} disabled={loading}>{loading ? "Simulating" : "Simulate"}</button>
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
 
       {result && (
-        <div style={{ marginTop: "1.5rem" }}>
+        <div>
           <p style={{ fontStyle: "italic" }}>{result.interpretation}</p>
 
-          <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "1rem" }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: "left" }}>Category</th>
-                <th style={{ textAlign: "right" }}>Current</th>
-                <th style={{ textAlign: "right" }}>Projected</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Necessities</td><td style={{ textAlign: "right" }}>₹{result.current.necessitiesAmount}</td><td style={{ textAlign: "right" }}>₹{result.projected.necessitiesAmount}</td></tr>
-              <tr><td>Lifestyle</td><td style={{ textAlign: "right" }}>₹{result.current.lifestyleAmount}</td><td style={{ textAlign: "right" }}>₹{result.projected.lifestyleAmount}</td></tr>
-              <tr><td>Savings</td><td style={{ textAlign: "right" }}>₹{result.current.savingsAmount}</td><td style={{ textAlign: "right" }}>₹{result.projected.savingsAmount}</td></tr>
-              <tr><td>Investments</td><td style={{ textAlign: "right" }}>₹{result.current.investmentsAmount}</td><td style={{ textAlign: "right" }}>₹{result.projected.investmentsAmount}</td></tr>
-              <tr><td>Goals</td><td style={{ textAlign: "right" }}>₹{result.current.goalsAmount}</td><td style={{ textAlign: "right" }}>₹{result.projected.goalsAmount}</td></tr>
-              <tr><td>Buffer</td><td style={{ textAlign: "right" }}>₹{result.current.bufferAmount}</td><td style={{ textAlign: "right" }}>₹{result.projected.bufferAmount}</td></tr>
-            </tbody>
-          </table>
+          <Card style={{ padding: 0, marginTop: "1rem" }}>
+            <table>
+              <thead><tr><th style={{ padding: "0.75rem 1rem" }}>Category</th><th style={{ textAlign: "right" }}>Current</th><th style={{ textAlign: "right", paddingRight: "1rem" }}>Projected</th></tr></thead>
+              <tbody>
+                {[
+                  ["Necessities", result.current.necessitiesAmount, result.projected.necessitiesAmount],
+                  ["Lifestyle", result.current.lifestyleAmount, result.projected.lifestyleAmount],
+                  ["Savings", result.current.savingsAmount, result.projected.savingsAmount],
+                  ["Investments", result.current.investmentsAmount, result.projected.investmentsAmount],
+                  ["Goals", result.current.goalsAmount, result.projected.goalsAmount],
+                  ["Buffer", result.current.bufferAmount, result.projected.bufferAmount],
+                ].map(([label, cur, proj]) => (
+                  <tr key={label as string}>
+                    <td style={{ paddingLeft: "1rem" }}>{label}</td>
+                    <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(cur as number)}</td>
+                    <td className="num" style={{ textAlign: "right", paddingRight: "1rem" }}>Rs {formatCurrency(proj as number)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
 
           <p style={{ marginTop: "1rem" }}>{result.explanation}</p>
         </div>

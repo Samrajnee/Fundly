@@ -37,8 +37,7 @@ export async function getSafeToSpend(req: Request, res: Response, next: NextFunc
 
     const daysInMonth = end.getDate() === 1 ? new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() : end.getDate();
     const today = now.getDate();
-    const daysLeftInMonth = Math.max(new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - today + 1, 1);
-
+    const daysLeftInMonth = Math.max(new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate(), 1);
     const dailySafeAmount = lifestyleBudgetRemaining / daysLeftInMonth;
     const weeklySafeAmount = dailySafeAmount * 7;
 
