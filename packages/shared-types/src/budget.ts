@@ -18,4 +18,8 @@ export interface SafeToSpendDTO {
   weeklySafeAmount: number;
   lifestyleBudgetRemaining: number;
   daysLeftInMonth: number;
+  todayTarget: number;
+  spentToday: number;
+  remainingToday: number;
+  tomorrowProjectedTarget: number | null;
 }

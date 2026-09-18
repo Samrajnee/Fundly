@@ -45,15 +45,54 @@ export default function BudgetPage() {
     <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
       <PageHeader title="Budget and safe-to-spend" />
 
-      {safeToSpend && (
-        <Card style={{ marginBottom: "1.5rem" }}>
-          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>Safe to spend</p>
-          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.8rem", margin: 0, color: "var(--color-clay-dark)" }}>Rs {formatCurrency(safeToSpend.dailySafeAmount)} today</p>
-<p style={{ fontSize: "0.85rem", margin: "0.25rem 0 0" }}>
-  Rs {formatCurrency(safeToSpend.weeklySafeAmount)} this week &middot; {safeToSpend.daysLeftInMonth === 1 ? "Today is the last day of the month" : `${safeToSpend.daysLeftInMonth} days left`}
-</p>
-</Card>
-      )}
+ {safeToSpend && (
+  <Card style={{ marginBottom: "1.5rem" }}>
+    <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>Today's target</p>
+    <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.8rem", margin: 0, color: "var(--color-accent-dark)" }}>
+      Rs {formatCurrency(safeToSpend.todayTarget)}
+    </p>
+
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", margin: "0.9rem 0" }}>
+      <div>
+        <p style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", margin: "0 0 0.15rem" }}>Spent today</p>
+        <p className="num" style={{ margin: 0, fontWeight: 600 }}>Rs {formatCurrency(safeToSpend.spentToday)}</p>
+      </div>
+      <div>
+        <p style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", margin: "0 0 0.15rem" }}>Remaining today</p>
+        <p className="num" style={{ margin: 0, fontWeight: 600, color: safeToSpend.remainingToday < 0 ? "var(--color-danger)" : "var(--color-primary)" }}>
+          Rs {formatCurrency(safeToSpend.remainingToday)}
+        </p>
+      </div>
+    </div>
+
+    {safeToSpend.remainingToday < 0 ? (
+      <p style={{ fontSize: "0.85rem", color: "var(--color-danger)", margin: 0 }}>
+        You've gone Rs {formatCurrency(Math.abs(safeToSpend.remainingToday))} over today's target.
+        {safeToSpend.tomorrowProjectedTarget !== null && (
+          <> Tomorrow's target adjusts down to roughly Rs {formatCurrency(safeToSpend.tomorrowProjectedTarget)} to make up for it.</>
+        )}
+      </p>
+    ) : safeToSpend.spentToday > 0 ? (
+      <p style={{ fontSize: "0.85rem", color: "var(--color-primary)", margin: 0 }}>
+        You're under budget today.
+        {safeToSpend.tomorrowProjectedTarget !== null && (
+          <> Tomorrow's target rises to roughly Rs {formatCurrency(safeToSpend.tomorrowProjectedTarget)}.</>
+        )}
+      </p>
+    ) : (
+      <p style={{ fontSize: "0.85rem", margin: 0 }}>
+        Nothing logged yet today.
+        {safeToSpend.tomorrowProjectedTarget !== null && (
+          <> If you spend nothing today, tomorrow's target rises to roughly Rs {formatCurrency(safeToSpend.tomorrowProjectedTarget)}.</>
+        )}
+      </p>
+    )}
+
+    <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", margin: "0.9rem 0 0" }}>
+      Rs {formatCurrency(safeToSpend.weeklySafeAmount)} this week &middot; {safeToSpend.daysLeftInMonth === 1 ? "today is the last day of the month" : `${safeToSpend.daysLeftInMonth} days left`}
+    </p>
+  </Card>
+)}
 
       <Card style={{ marginBottom: "1.5rem" }}>
         <form onSubmit={handleSubmit(onSubmit)}>
