@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { Fraunces, Public_Sans } from "next/font/google";
+import { Familjen_Grotesk, Public_Sans } from "next/font/google";
 import "./globals.css";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeProvider } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth-context";
 import { AuthGate } from "@/lib/auth-gate";
 import { Nav } from "@/components/Nav";
 
-const fraunces = Fraunces({
+const familjenGrotesk = Familjen_Grotesk({
   subsets: ["latin"],
-  variable: "--font-serif",
-  weight: ["400", "500", "600"],
+  variable: "--font-display",
+  weight: ["500", "600", "700"],
 });
 
 const publicSans = Public_Sans({
@@ -24,17 +26,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${publicSans.variable}`}>
+    <html lang="en" className={`${familjenGrotesk.variable} ${publicSans.variable}`} suppressHydrationWarning>
       <body>
-        <AuthProvider>
-          <AuthGate>
-            <div style={{ display: "flex" }}>
-              <Nav />
-              <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
-            </div>
-          </AuthGate>
-        </AuthProvider>
-      </body>
+  <ThemeProvider>
+    <ThemeToggle />
+    <AuthProvider>
+      <AuthGate>
+        <div style={{ display: "flex" }}>
+          <Nav />
+          <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+        </div>
+      </AuthGate>
+    </AuthProvider>
+  </ThemeProvider>
+</body>
     </html>
   );
 }

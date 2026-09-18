@@ -59,7 +59,9 @@ const NAV_GROUPS = [
   },
   {
     label: "Learn",
-    links: [{ href: "/education", label: "Financial education" }],
+    links: [
+      { href: "/education", label: "Financial education" },
+    ],
   },
 ];
 
@@ -72,16 +74,15 @@ export function Nav() {
 
   return (
     <nav
+      className="glass-surface"
       style={{
         width: 236,
         flexShrink: 0,
-        borderRight: "1px solid var(--color-border)",
         height: "100vh",
         overflowY: "auto",
         padding: "1.5rem 1rem",
         position: "sticky",
         top: 0,
-        background: "var(--color-surface)",
       }}
     >
       <Link
@@ -114,9 +115,11 @@ export function Nav() {
           >
             {group.label}
           </p>
+
           <div style={{ display: "flex", flexDirection: "column" }}>
             {group.links.map((link) => {
               const active = pathname === link.href;
+
               return (
                 <Link
                   key={link.href}
@@ -127,8 +130,12 @@ export function Nav() {
                     fontSize: "0.88rem",
                     fontWeight: active ? 600 : 400,
                     textDecoration: "none",
-                    color: active ? "var(--color-clay-dark)" : "var(--color-text-secondary)",
-                    background: active ? "var(--color-clay-light)" : "transparent",
+                    color: active
+                      ? "var(--color-accent-dark)"
+                      : "var(--color-text-secondary)",
+                    background: active
+                      ? "var(--color-accent-light)"
+                      : "transparent",
                   }}
                 >
                   {link.label}
@@ -139,7 +146,13 @@ export function Nav() {
         </div>
       ))}
 
-      <div style={{ marginTop: "1.5rem", borderTop: "1px solid var(--color-border)", paddingTop: "1rem" }}>
+      <div
+        style={{
+          marginTop: "1.5rem",
+          borderTop: "1px solid var(--color-border)",
+          paddingTop: "1rem",
+        }}
+      >
         <Link
           href="/settings"
           style={{
@@ -151,6 +164,7 @@ export function Nav() {
         >
           Settings
         </Link>
+
         <button
           onClick={async () => {
             await logout();
