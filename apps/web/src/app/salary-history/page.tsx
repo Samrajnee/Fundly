@@ -35,12 +35,12 @@ export default function SalaryHistoryPage() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           {history.map((entry) => (
-            <Card key={entry.id} style={entry.isActive ? { borderColor: "var(--color-olive)" } : undefined}>
+            <Card key={entry.id} style={entry.isActive ? { borderColor: "var(--color-success)" } : undefined}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <span className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem" }}>
                   Rs {formatCurrency(entry.monthlySalary)}
                 </span>
-                {entry.isActive && <span style={{ fontSize: "0.78rem", color: "var(--color-olive-dark)" }}>Active</span>}
+                {entry.isActive && <span style={{ fontSize: "0.78rem", color: "var(--color-success)" }}>Active</span>}
               </div>
 
               <p style={{ fontSize: "0.85rem", margin: "0.25rem 0 0.75rem" }}>
@@ -49,7 +49,7 @@ export default function SalaryHistoryPage() {
               </p>
 
               {entry.changeFromPrevious && (
-                <p style={{ margin: "0 0 0.75rem", color: entry.changeFromPrevious.salaryDelta >= 0 ? "var(--color-olive-dark)" : "var(--color-danger)" }}>
+                <p style={{ margin: "0 0 0.75rem", color: entry.changeFromPrevious.salaryDelta >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>
                   {entry.changeFromPrevious.salaryDelta >= 0 ? "+" : ""}Rs {formatCurrency(entry.changeFromPrevious.salaryDelta)} ({entry.changeFromPrevious.salaryDeltaPercent >= 0 ? "+" : ""}{entry.changeFromPrevious.salaryDeltaPercent}%) from previous plan
                 </p>
               )}

@@ -24,7 +24,7 @@ export default function HealthScorePage() {
       <PageHeader title="Financial health score" />
 
       <Card style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-        <p style={{ fontFamily: "var(--font-heading)", fontSize: "2.6rem", fontWeight: 500, margin: 0, color: "var(--color-clay-dark)" }}>
+        <p style={{ fontFamily: "var(--font-heading)", fontSize: "2.6rem", fontWeight: 500, margin: 0, color: "var(--color-accent-dark)" }}>
           {score.totalScore} / {score.maxScore}
         </p>
         <p style={{ margin: "0.25rem 0 0" }}>{percent}%</p>
@@ -37,7 +37,7 @@ export default function HealthScorePage() {
             <span className="num">{c.score}/{c.maxScore}</span>
           </div>
           <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden", marginBottom: "0.5rem" }}>
-            <div style={{ width: `${(c.score / c.maxScore) * 100}%`, background: c.score / c.maxScore >= 0.7 ? "var(--color-olive)" : c.score / c.maxScore >= 0.4 ? "#c98a2e" : "var(--color-danger)", height: "100%" }} />
+            <div style={{ width: `${(c.score / c.maxScore) * 100}%`, background: c.score / c.maxScore >= 0.7 ? "var(--color-success)" : c.score / c.maxScore >= 0.4 ? "#c98a2e" : "var(--color-danger)", height: "100%" }} />
           </div>
           <p style={{ margin: 0, fontSize: "0.88rem" }}>{c.message}</p>
         </Card>

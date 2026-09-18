@@ -89,7 +89,7 @@ export default function DebtsPage() {
               </div>
               <p style={{ fontSize: "0.85rem", margin: "0.15rem 0 0.6rem" }}>{d.type}</p>
               <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden", marginBottom: "0.5rem" }}>
-                <div style={{ width: `${d.percentPaidOff}%`, background: "var(--color-olive)", height: "100%" }} />
+                <div style={{ width: `${d.percentPaidOff}%`, background: "var(--color-success)", height: "100%" }} />
               </div>
               <p style={{ margin: "0 0 0.2rem", fontSize: "0.85rem" }}>{d.percentPaidOff}% paid off</p>
               <p className="num" style={{ margin: "0 0 0.2rem" }}>Rs {formatCurrency(d.outstandingAmount)} of Rs {formatCurrency(d.principalAmount)}</p>

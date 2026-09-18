@@ -9,6 +9,7 @@ const DEFAULT_CATEGORIES = [
   { name: "Entertainment", type: "LIFESTYLE" as const },
   { name: "Shopping", type: "LIFESTYLE" as const },
   { name: "Subscriptions", type: "LIFESTYLE" as const },
+  { name: "Miscellaneous", type: "LIFESTYLE" as const },
   { name: "Emergency Fund", type: "SAVINGS" as const },
   { name: "General Savings", type: "SAVINGS" as const },
   { name: "SIP / Mutual Funds", type: "INVESTMENT" as const },
@@ -17,11 +18,16 @@ const DEFAULT_CATEGORIES = [
 ];
 
 export async function createDefaultCategoriesForUser(userId: string) {
-  for (const cat of DEFAULT_CATEGORIES) {
-    await prisma.category.upsert({
-      where: { userId_name: { userId, name: cat.name } },
-      update: {},
-      create: { userId, name: cat.name, type: cat.type, isDefault: true },
-    });
-  }
+  const existing = await prisma.category.findMany({
+    where: { userId },
+    select: { name: true },
+  });
+  const existingNames = new Set(existing.map((c) => c.name));
+  const missing = DEFAULT_CATEGORIES.filter((c) => !existingNames.has(c.name));
+
+  if (missing.length === 0) return;
+
+  await prisma.category.createMany({
+    data: missing.map((c) => ({ userId, name: c.name, type: c.type, isDefault: true })),
+  });
 }

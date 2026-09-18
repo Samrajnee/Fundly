@@ -46,7 +46,7 @@ export default function RecurringPage() {
     <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
       <PageHeader title="Recurring expenses" description="Rent, subscriptions, EMIs, and bills that repeat." />
 
-      <button onClick={onPostDueNow} style={{ marginBottom: "1.25rem", background: "transparent", color: "var(--color-clay-dark)", border: "1px solid var(--color-clay)" }}>
+      <button onClick={onPostDueNow} style={{ marginBottom: "1.25rem", background: "transparent", color: "var(--color-accent-dark)", border: "1px solid var(--color-accent)" }}>
         Post due expenses now
       </button>
 

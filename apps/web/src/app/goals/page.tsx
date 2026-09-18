@@ -112,7 +112,7 @@ export default function GoalsPage() {
                   <span
                     style={{
                       fontSize: "0.78rem",
-                      color: g.status === "COMPLETED" ? "var(--color-olive-dark)" : "var(--color-text-muted)",
+                      color: g.status === "COMPLETED" ? "var(--color-success)" : "var(--color-text-muted)",
                     }}
                   >
                     {g.status === "COMPLETED" ? "Completed" : "In progress"}
@@ -120,7 +120,7 @@ export default function GoalsPage() {
                 </div>
 
                 <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden", margin: "0.75rem 0" }}>
-                  <div style={{ width: `${percent}%`, background: "var(--color-olive)", height: "100%" }} />
+                  <div style={{ width: `${percent}%`, background: "var(--color-success)", height: "100%" }} />
                 </div>
 
                 <p className="num" style={{ margin: "0 0 0.25rem" }}>
@@ -145,15 +145,7 @@ export default function GoalsPage() {
                   </div>
                 )}
 
-                <button
-                  onClick={() => onDelete(g.id)}
-                  style={{
-                    marginTop: "0.75rem",
-                    background: "transparent",
-                    color: "var(--color-danger)",
-                    border: "1px solid var(--color-danger-light)",
-                  }}
-                >
+                <button onClick={() => onDelete(g.id)} className="danger-chip" style={{ marginTop: "0.75rem" }}>
                   Delete goal
                 </button>
               </Card>

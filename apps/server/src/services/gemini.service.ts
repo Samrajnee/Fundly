@@ -12,7 +12,7 @@ export async function callGeminiTool<T = Record<string, unknown>>(params: {
   schema: FunctionDeclarationSchema;
 }): Promise<T> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     tools: [
       {
         functionDeclarations: [
@@ -30,22 +30,39 @@ export async function callGeminiTool<T = Record<string, unknown>>(params: {
         allowedFunctionNames: [params.functionName],
       },
     },
+    generationConfig: {
+      temperature: 0,
+      // @ts-expect-error — thinkingConfig is supported by the API but not yet in the published SDK types
+      thinkingConfig: { thinkingBudget: 0 },
+    },
   });
 
-  const result = await model.generateContent(params.prompt);
-  const calls = result.response.functionCalls();
-
-  if (!calls || calls.length === 0) {
-    throw new Error("Gemini did not return a function call");
+  async function attempt(): Promise<T> {
+    const result = await model.generateContent(params.prompt);
+    const calls = result.response.functionCalls();
+    if (!calls || calls.length === 0) {
+      throw new Error("Gemini did not return a function call");
+    }
+    return calls[0].args as T;
   }
 
-  return calls[0].args as T;
+  try {
+    return await attempt();
+  } catch {
+    // One retry — Gemini occasionally returns plain text instead of the
+    // forced function call on the first try; a retry resolves most of these.
+    return await attempt();
+  }
 }
 
 export async function callGeminiText(params: { systemInstruction?: string; prompt: string }): Promise<string> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-3.6-flash",    
+    model: "gemini-2.5-flash",
     systemInstruction: params.systemInstruction,
+    generationConfig: {
+      // @ts-expect-error — thinkingConfig is supported by the API but not yet in the published SDK types
+      thinkingConfig: { thinkingBudget: 0 },
+    },
   });
 
   const result = await model.generateContent(params.prompt);

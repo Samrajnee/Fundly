@@ -47,15 +47,12 @@ export default function MilestonesPage() {
       <Card style={{ marginBottom: "1.5rem" }}>
         {milestones.map((m, idx) => (
           <div key={m.key} style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: idx < milestones.length - 1 ? "1px solid var(--color-border)" : "none", opacity: m.achieved ? 1 : 0.5 }}>
-            <span>{m.achieved ? "Achieved" : "Not yet"} \u2014 {m.label}</span>
-            {m.achieved && m.achievedAt && <small>{new Date(m.achievedAt).toLocaleDateString()}</small>}
-          </div>
+          <span>{m.achieved ? "Achieved:" : "Not yet:"} {m.label}</span>          </div>
         ))}
       </Card>
 
       <h2>Your own milestones</h2>
-      <p>Anything meaningful to you \u2014 mark it done yourself whenever it happens.</p>
-
+      <p>Anything meaningful to you. Mark it done yourself whenever it happens.</p>
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
         <input type="text" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => e.key === "Enter" && onAddCustom()} placeholder="Paid off laptop EMI" />
         <button onClick={onAddCustom}>Add</button>

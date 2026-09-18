@@ -66,7 +66,7 @@ export default function OnboardingPage() {
 
         <label>
           <input type="checkbox" {...register("isFirstSalary")} />
-          This is my first salary - guide me through it
+          This is my first salary. Guide me through it
         </label>
 
         <button type="submit">Continue</button>

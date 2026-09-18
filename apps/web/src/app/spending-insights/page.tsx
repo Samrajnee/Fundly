@@ -30,7 +30,7 @@ export default function SpendingInsightsPage() {
         </Card>
         <Card>
           <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>Savings rate</p>
-          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.6rem", margin: 0, color: "var(--color-olive-dark)" }}>{data.currentMonthSavingsRate}%</p>
+          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.6rem", margin: 0, color: "var(--color-success)" }}>{data.currentMonthSavingsRate}%</p>
         </Card>
       </div>
 
@@ -46,7 +46,7 @@ export default function SpendingInsightsPage() {
                 <span className="num">Rs {formatCurrency(c.amount)} ({c.percentOfTotal}%)</span>
               </div>
               <div style={{ background: "var(--color-surface-alt)", height: "6px", borderRadius: "3px", overflow: "hidden" }}>
-                <div style={{ width: `${c.percentOfTotal}%`, background: "var(--color-clay)", height: "100%" }} />
+                <div style={{ width: `${c.percentOfTotal}%`, background: "var(--color-accent)", height: "100%" }} />
               </div>
             </div>
           ))}
@@ -69,7 +69,7 @@ export default function SpendingInsightsPage() {
                   border: "1px solid var(--color-border)",
                   borderRadius: "var(--radius-sm)",
                 }}
-/>              <Bar dataKey="amount" fill="var(--color-clay)" radius={[4, 4, 0, 0]} />
+/>              <Bar dataKey="amount" fill="var(--color-accent)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

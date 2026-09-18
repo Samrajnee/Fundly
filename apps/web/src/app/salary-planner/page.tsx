@@ -112,7 +112,7 @@ export default function SalaryPlannerPage() {
               {result.reasoning}
               {result.source === "RULE_BASED" && (
                 <span style={{ display: "block", color: "var(--color-text-muted)", marginTop: "0.35rem", fontSize: "0.82rem" }}>
-                  Standard allocation — AI temporarily unavailable
+                  Standard allocation - AI temporarily unavailable
                 </span>
               )}
             </Callout>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "@/lib/theme-context";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -13,13 +14,22 @@ import { apiGet } from "@/lib/api";
 import type { DashboardDTO } from "@fundly/shared-types";
 import { useCountUp } from "@/lib/useCountUp";
 
-const BREAKDOWN_COLORS = [
-  "#b15e3d",
-  "#c98a5e",
-  "#6e7b4b",
-  "#8f9a6e",
-  "#a6402e",
-  "#d8c8ae",
+const BREAKDOWN_COLORS_LIGHT = [
+  "#1b3a2b",
+  "#a6832f",
+  "#3f6b52",
+  "#7c9b76",
+  "#8a6c26",
+  "#c7d1c1",
+];
+
+const BREAKDOWN_COLORS_DARK = [
+  "#3e6b52",
+  "#c6a24e",
+  "#5a8a6c",
+  "#8fae83",
+  "#ddb75c",
+  "#4a5f4c",
 ];
 
 function formatCurrency(n: number): string {
@@ -73,6 +83,13 @@ function StatCard({
 }
 
 export default function DashboardPage() {
+  const { theme } = useTheme();
+
+  const breakdownColors =
+    theme === "dark"
+      ? BREAKDOWN_COLORS_DARK
+      : BREAKDOWN_COLORS_LIGHT;
+
   const [data, setData] = useState<DashboardDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -274,8 +291,8 @@ export default function DashboardPage() {
                     <Cell
                       key={idx}
                       fill={
-                        BREAKDOWN_COLORS[
-                          idx % BREAKDOWN_COLORS.length
+                        breakdownColors[
+                          idx % breakdownColors.length
                         ]
                       }
                     />
@@ -324,8 +341,8 @@ export default function DashboardPage() {
                       height: 10,
                       borderRadius: "50%",
                       background:
-                        BREAKDOWN_COLORS[
-                          idx % BREAKDOWN_COLORS.length
+                        breakdownColors[
+                          idx % breakdownColors.length
                         ],
                       flexShrink: 0,
                     }}
@@ -449,11 +466,13 @@ export default function DashboardPage() {
       <Link href="/milestones">View all</Link>
 
       {/* Financial Education */}
-      <p style={{ marginTop: "2rem" }}>
-        <Link href="/education">
+      <div style={{ marginTop: "2rem" }}>
+      <Link href="/education" style={{ textDecoration: "none" }}>
+        <button style={{ borderRadius: "999px" }}>
           Financial education
-        </Link>
-      </p>
+        </button>
+      </Link>
+      </div>
     </main>
   );
 }

@@ -44,11 +44,11 @@ export async function generateAiMonthlyReview(userId: string): Promise<AIMonthly
   }
 
   const dataSummary = `
-Necessities — planned ${plan.necessitiesTarget}, actual ${actualByType.NECESSITY}
-Lifestyle — planned ${plan.lifestyleTarget}, actual ${actualByType.LIFESTYLE}
-Savings — planned ${plan.savingsTarget}, actual ${actualByType.SAVINGS}
-Investments — planned ${plan.investmentsTarget}, actual ${actualByType.INVESTMENT}
-Goals — planned ${plan.goalsTarget}, actual ${actualByType.GOAL}`.trim();
+Necessities - planned ${plan.necessitiesTarget}, actual ${actualByType.NECESSITY}
+Lifestyle - planned ${plan.lifestyleTarget}, actual ${actualByType.LIFESTYLE}
+Savings - planned ${plan.savingsTarget}, actual ${actualByType.SAVINGS}
+Investments - planned ${plan.investmentsTarget}, actual ${actualByType.INVESTMENT}
+Goals - planned ${plan.goalsTarget}, actual ${actualByType.GOAL}`.trim();
 
   try {
     const raw = await callGeminiTool({
@@ -63,7 +63,7 @@ Goals — planned ${plan.goalsTarget}, actual ${actualByType.GOAL}`.trim();
         },
         required: ["summary", "highlights", "areasToImprove"],
       },
-      prompt: `Here is this month's planned vs actual spending data:\n\n${dataSummary}\n\nSummarize this month. Use only the numbers given — don't invent anything not in this data.`,
+      prompt: `Here is this month's planned vs actual spending data:\n\n${dataSummary}\n\nSummarize this month. Use only the numbers given - don't invent anything not in this data.`,
     });
 
     const parsed = reviewResponseSchema.safeParse(raw);

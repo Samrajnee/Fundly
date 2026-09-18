@@ -1,5 +1,5 @@
 :root {
-  /* Light — sage porcelain */
+  /* Light - sage porcelain */
   --color-bg: #eef1ed;
   --color-surface: #f8faf7;
   --color-surface-alt: #e1e7dd;
@@ -22,17 +22,27 @@
   --color-danger: #a6402e;
   --color-danger-light: #f0d9d3;
 
-  /* Liquid glass — active in both themes */
+  --color-success: #2f6b4a;
+  --color-success-light: #dde8e0;
+
+  --color-notice: #4a5a52;
+  --color-notice-bg: #e4e9e2;
+
+  /* Liquid glass - active in both themes */
   --glass-bg: linear-gradient(
     135deg,
     rgba(248, 250, 247, 0.78),
     rgba(248, 250, 247, 0.34)
   );
-  --glass-border: rgba(255, 255, 255, 0.55);
+
+  --glass-border: rgba(46, 92, 68, 0.22);
+
   --glass-blur: 18px;
+
   --glass-shadow:
     0 8px 28px rgba(27, 58, 43, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.65);
+
   --glass-shadow-hover:
     0 14px 38px rgba(27, 58, 43, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.75);
@@ -74,17 +84,27 @@
   --color-danger: #d9705a;
   --color-danger-light: #3a2622;
 
-  /* Liquid glass — active in both themes */
+  --color-success: #86c4a0;
+  --color-success-light: #1f3327;
+
+  --color-notice: #b7c2ba;
+  --color-notice-bg: #223026;
+
+  /* Liquid glass - active in both themes */
   --glass-bg: linear-gradient(
     135deg,
     rgba(34, 53, 42, 0.7),
     rgba(20, 33, 26, 0.38)
   );
+
   --glass-border: rgba(198, 162, 78, 0.28);
+
   --glass-blur: 20px;
+
   --glass-shadow:
     0 8px 28px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(198, 162, 78, 0.16);
+
   --glass-shadow-hover:
     0 14px 38px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(198, 162, 78, 0.26);
@@ -93,6 +113,11 @@
     0 1px 2px rgba(0, 0, 0, 0.25),
     0 6px 20px rgba(0, 0, 0, 0.3);
 }
+
+
+/* =========================================================
+   Base
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -108,6 +133,11 @@ body {
   font-size: 15px;
   line-height: 1.6;
 }
+
+
+/* =========================================================
+   Typography
+   ========================================================= */
 
 h1,
 h2,
@@ -137,6 +167,11 @@ p {
   margin: 0 0 1rem;
 }
 
+
+/* =========================================================
+   Links
+   ========================================================= */
+
 a {
   color: var(--color-accent-dark);
   text-decoration: none;
@@ -146,10 +181,40 @@ a:hover {
   text-decoration: underline;
 }
 
+
+/* =========================================================
+   Numbers + Tables
+   ========================================================= */
+
 .num,
 table {
   font-variant-numeric: tabular-nums;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+td,
+th {
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+
+/* =========================================================
+   Form Controls
+   ========================================================= */
 
 input,
 select,
@@ -185,75 +250,40 @@ label textarea {
   margin-top: 0.3rem;
 }
 
-button {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 0.6rem 1.1rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-primary);
-  background: var(--color-primary);
-  color: var(--color-accent-light);
-  cursor: pointer;
-  transition: background 0.15s ease;
+
+/* =========================================================
+   Checkbox
+   ========================================================= */
+
+input[type="checkbox"] {
+  width: auto;
+  accent-color: var(--color-primary);
 }
 
-[data-theme="dark"] button {
-  color: #14211a;
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+[data-theme="dark"] input[type="checkbox"] {
+  accent-color: var(--color-accent);
 }
 
-button:hover {
-  background: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
+
+/* =========================================================
+   Number Inputs
+   ========================================================= */
+
+/* Remove number input spin arrows */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
-[data-theme="dark"] button:hover {
-  background: var(--color-accent-dark);
-  border-color: var(--color-accent-dark);
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-button:disabled {
-  background: var(--color-text-muted);
-  border-color: var(--color-text-muted);
-  cursor: not-allowed;
-}
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td,
-th {
-  padding: 0.5rem 0.25rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-th {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-/* Liquid glass finish */
-.glass-surface {
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--glass-shadow);
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-}
-
-.glass-surface:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glass-shadow-hover);
-}
+/* =========================================================
+   Buttons
+   ========================================================= */
 
 button {
   font-family: var(--font-body);
@@ -265,7 +295,10 @@ button {
   background: var(--color-primary);
   color: var(--color-accent-light);
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 [data-theme="dark"] button {
@@ -294,4 +327,61 @@ button:disabled {
   border-color: var(--color-text-muted);
   cursor: not-allowed;
   transform: none;
+}
+
+
+/* =========================================================
+   Liquid Glass
+   ========================================================= */
+
+.glass-surface {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.glass-surface:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-hover);
+}
+
+
+/* =========================================================
+   Notice Banner
+   ========================================================= */
+
+/* Calm informational banner for adjustments and notices */
+.notice-banner {
+  background: var(--color-notice-bg);
+  color: var(--color-notice);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+}
+
+
+/* =========================================================
+   Danger Chip
+   ========================================================= */
+
+/* Soft styling for delete actions and genuine gaps */
+.danger-chip {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.danger-chip:hover {
+  background: var(--color-danger);
+  color: #fff;
 }

@@ -5,7 +5,9 @@ export interface ParseExpenseInput {
 export interface ParsedExpenseDTO {
   amount: number;
   merchant: string | null;
-  date: string; // ISO date
-  suggestedCategoryName: string;
+  date: string;
+  resolvedCategoryId: string;
+  resolvedCategoryName: string;
   confidence: "HIGH" | "MEDIUM" | "LOW";
+  usedFallbackCategory: boolean;
 }

@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
         <label>Email<input type="email" {...register("email", { required: true })} /></label>
         <button type="submit" style={{ width: "100%" }}>Send reset link</button>
       </form>
-      {message && <p style={{ color: "var(--color-olive-dark)" }}>{message}</p>}
+      {message && <p style={{ color: "var(--color-success)" }}>{message}</p>}
       {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
       <p><a href="/login">Back to login</a></p>
     </AuthShell>

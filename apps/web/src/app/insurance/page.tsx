@@ -45,13 +45,11 @@ export default function InsurancePage() {
     <main style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem" }}>
       <PageHeader title="Insurance planner" />
 
-      {(!hasHealth || !hasLife) && (
-        <Card style={{ marginBottom: "1.5rem", borderColor: "var(--color-danger-light)", background: "var(--color-danger-light)" }}>
-          <p style={{ margin: 0, color: "var(--color-danger)" }}>
-            Gap detected: missing {!hasHealth && !hasLife ? "health and life" : !hasHealth ? "health" : "life"} insurance.
-          </p>
-        </Card>
-      )}
+   {(!hasHealth || !hasLife) && (
+  <div className="notice-banner" style={{ marginBottom: "1.5rem" }}>
+    You're missing {!hasHealth && !hasLife ? "health and life" : !hasHealth ? "health" : "life"} insurance - worth covering when you can.
+  </div>
+)}
 
       <Card style={{ marginBottom: "1.5rem" }}>
         <form onSubmit={handleSubmit(onSubmit)}>

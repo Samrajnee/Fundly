@@ -47,7 +47,7 @@ export default function SettingsPage() {
           <label>Email<input type="email" {...accountForm.register("email", { required: true })} /></label>
           <button type="submit">Save changes</button>
         </form>
-        {accountMessage && <p style={{ color: "var(--color-olive-dark)" }}>{accountMessage}</p>}
+        {accountMessage && <p style={{ color: "var(--color-success)" }}>{accountMessage}</p>}
         {accountError && <p style={{ color: "var(--color-danger)" }}>{accountError}</p>}
       </Card>
 
@@ -58,7 +58,7 @@ export default function SettingsPage() {
           <label>New password (min 8 characters)<input type="password" {...passwordForm.register("newPassword", { required: true, minLength: 8 })} /></label>
           <button type="submit">Change password</button>
         </form>
-        {passwordMessage && <p style={{ color: "var(--color-olive-dark)" }}>{passwordMessage}</p>}
+        {passwordMessage && <p style={{ color: "var(--color-success)" }}>{passwordMessage}</p>}
         {passwordError && <p style={{ color: "var(--color-danger)" }}>{passwordError}</p>}
       </Card>
 
@@ -68,7 +68,7 @@ export default function SettingsPage() {
           <p style={{ margin: "0 0 0.3rem" }}>Today: {usage.userCallsToday} of {usage.userDailyLimit} requests used</p>
           <p style={{ margin: "0 0 0.5rem" }}>This month: {usage.userCallsThisMonth} requests</p>
           <div style={{ background: "var(--color-surface-alt)", height: "8px", borderRadius: "4px", overflow: "hidden" }}>
-            <div style={{ width: `${Math.min((usage.userCallsToday / usage.userDailyLimit) * 100, 100)}%`, background: usage.userCallsToday >= usage.userDailyLimit ? "var(--color-danger)" : "var(--color-olive)", height: "100%" }} />
+            <div style={{ width: `${Math.min((usage.userCallsToday / usage.userDailyLimit) * 100, 100)}%`, background: usage.userCallsToday >= usage.userDailyLimit ? "var(--color-danger)" : "var(--color-success)", height: "100%" }} />
           </div>
         </Card>
       )}

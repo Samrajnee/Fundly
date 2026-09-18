@@ -38,7 +38,7 @@ export default function EmergencyFundPage() {
         <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", margin: "0 0 0.75rem" }}>Rs {formatCurrency(fund.targetAmount)}</p>
 
         <div style={{ background: "var(--color-surface-alt)", height: "8px", borderRadius: "4px", overflow: "hidden", marginBottom: "0.5rem" }}>
-          <div style={{ width: `${Math.min(fund.percentComplete, 100)}%`, background: "var(--color-olive)", height: "100%" }} />
+          <div style={{ width: `${Math.min(fund.percentComplete, 100)}%`, background: "var(--color-success)", height: "100%" }} />
         </div>
         <p style={{ margin: 0, fontSize: "0.85rem" }}>
           Rs {formatCurrency(fund.currentAmount)} saved ({fund.percentComplete}%, {fund.monthsCovered} months covered)

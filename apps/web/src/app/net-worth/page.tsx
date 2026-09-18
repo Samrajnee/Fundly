@@ -32,7 +32,7 @@ export default function NetWorthPage() {
       <PageHeader title="Net worth tracker" />
 
       <Card style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-        <p style={{ fontFamily: "var(--font-heading)", fontSize: "2.4rem", fontWeight: 500, margin: 0, color: data.netWorth >= 0 ? "var(--color-olive-dark)" : "var(--color-danger)" }}>
+        <p style={{ fontFamily: "var(--font-heading)", fontSize: "2.4rem", fontWeight: 500, margin: 0, color: data.netWorth >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>
           Rs {formatCurrency(data.netWorth)}
         </p>
         <p style={{ margin: "0.25rem 0 0" }}>Net worth</p>
@@ -68,7 +68,7 @@ export default function NetWorthPage() {
                   border: "1px solid var(--color-border)",
                   borderRadius: "var(--radius-sm)",
                 }}
-              />              <Line type="monotone" dataKey="netWorth" stroke="var(--color-clay)" strokeWidth={2} dot={false} />
+              />              <Line type="monotone" dataKey="netWorth" stroke="var(--color-accent)" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>

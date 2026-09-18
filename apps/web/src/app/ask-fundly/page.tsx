@@ -40,9 +40,9 @@ export default function AskFundlyPage() {
             key={idx}
             style={{
               alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-              background: m.role === "user" ? "var(--color-clay-light)" : "var(--color-surface)",
+              background: m.role === "user" ? "var(--color-accent-light)" : "var(--color-surface)",
               border: m.role === "user" ? "none" : "1px solid var(--color-border)",
-              color: m.role === "user" ? "var(--color-clay-dark)" : "var(--color-ink)",
+              color: m.role === "user" ? "var(--color-accent-dark)" : "var(--color-ink)",
               padding: "0.75rem 1rem",
               borderRadius: "var(--radius-md)",
               maxWidth: "82%",

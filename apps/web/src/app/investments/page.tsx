@@ -60,7 +60,7 @@ export default function InvestmentsPage() {
         </Card>
         <Card>
           <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", margin: "0 0 0.25rem" }}>Gain / loss</p>
-          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem", margin: 0, color: totalCurrent >= totalInvested ? "var(--color-olive-dark)" : "var(--color-danger)" }}>
+          <p className="num" style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem", margin: 0, color: totalCurrent >= totalInvested ? "var(--color-success)" : "var(--color-danger)" }}>
             Rs {formatCurrency(totalCurrent - totalInvested)}
           </p>
         </Card>
@@ -96,7 +96,7 @@ export default function InvestmentsPage() {
                   <td style={{ paddingLeft: "1rem" }}>{inv.name}</td>
                   <td>{inv.type}</td>
                   <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(inv.investedAmount)}</td>
-                  <td className="num" style={{ textAlign: "right", color: inv.gainLoss >= 0 ? "var(--color-olive-dark)" : "var(--color-danger)" }}>
+                  <td className="num" style={{ textAlign: "right", color: inv.gainLoss >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>
                     Rs {formatCurrency(inv.currentValue)}
                   </td>
                   <td style={{ textAlign: "right", paddingRight: "1rem" }}>

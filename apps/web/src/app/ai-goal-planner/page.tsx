@@ -34,7 +34,7 @@ export default function AiGoalPlannerPage() {
 
   return (
     <main style={{ maxWidth: 620, margin: "0 auto", padding: "2.5rem" }}>
-      <PageHeader title="AI goal planner" description='Describe a goal naturally — "I want to buy a Rs 1.5 lakh bike in 12 months."' />
+      <PageHeader title="AI goal planner" description='Describe a goal naturally: "I want to buy a Rs 1.5 lakh bike in 12 months."' />
 
       <div style={{ display: "flex", gap: "0.5rem" }}>
         <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe your goal" />
@@ -48,7 +48,7 @@ export default function AiGoalPlannerPage() {
           <h3 style={{ marginTop: 0 }}>{proposal.name}</h3>
           <p className="num" style={{ margin: "0 0 0.3rem" }}>Target: Rs {formatCurrency(proposal.targetAmount)} by {new Date(proposal.targetDate).toLocaleDateString()}</p>
           <p className="num" style={{ margin: "0 0 0.75rem" }}>Save Rs {formatCurrency(proposal.monthlyRequired)}/month</p>
-          <p style={{ color: proposal.feasible ? "var(--color-olive-dark)" : "var(--color-danger)", margin: "0 0 1rem" }}>{proposal.reasoning}</p>
+          <p style={{ color: proposal.feasible ? "var(--color-success)" : "var(--color-danger)", margin: "0 0 1rem" }}>{proposal.reasoning}</p>
           <button onClick={onConfirm}>Confirm and create goal</button>
         </Card>
       )}

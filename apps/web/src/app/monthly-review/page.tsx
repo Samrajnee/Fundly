@@ -52,9 +52,9 @@ export default function MonthlyReviewPage() {
                 <td style={{ paddingLeft: "1rem" }}>{c.label}</td>
                 <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(c.planned)}</td>
                 <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(c.actual)}</td>
-                <td className="num" style={{ textAlign: "right", paddingRight: "1rem", color: c.variance > 0 ? "var(--color-danger)" : "var(--color-olive-dark)" }}>
-                  {c.variance > 0 ? "+" : ""}Rs {formatCurrency(c.variance)}
-                </td>
+               <td className="num" style={{ textAlign: "right", paddingRight: "1rem", color: c.variance > 0 ? "var(--color-danger)" : "var(--color-success)" }}>
+                {c.variance >= 0 ? "+" : "\u2212"}Rs {formatCurrency(Math.abs(c.variance))}
+              </td>
               </tr>
             ))}
           </tbody>
