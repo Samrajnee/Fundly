@@ -12,7 +12,7 @@ export async function callGeminiTool<T = Record<string, unknown>>(params: {
   schema: FunctionDeclarationSchema;
 }): Promise<T> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.6-flash",
     tools: [
       {
         functionDeclarations: [
@@ -32,7 +32,7 @@ export async function callGeminiTool<T = Record<string, unknown>>(params: {
     },
     generationConfig: {
       temperature: 0,
-      // @ts-expect-error — thinkingConfig is supported by the API but not yet in the published SDK types
+      // @ts-expect-error - thinkingConfig is supported by the API but not yet in the published SDK types
       thinkingConfig: { thinkingBudget: 0 },
     },
   });
@@ -49,7 +49,7 @@ export async function callGeminiTool<T = Record<string, unknown>>(params: {
   try {
     return await attempt();
   } catch {
-    // One retry — Gemini occasionally returns plain text instead of the
+    // One retry - Gemini occasionally returns plain text instead of the
     // forced function call on the first try; a retry resolves most of these.
     return await attempt();
   }
@@ -57,10 +57,10 @@ export async function callGeminiTool<T = Record<string, unknown>>(params: {
 
 export async function callGeminiText(params: { systemInstruction?: string; prompt: string }): Promise<string> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+  model: "gemini-3.6-flash",
     systemInstruction: params.systemInstruction,
     generationConfig: {
-      // @ts-expect-error — thinkingConfig is supported by the API but not yet in the published SDK types
+      // @ts-expect-error - thinkingConfig is supported by the API but not yet in the published SDK types
       thinkingConfig: { thinkingBudget: 0 },
     },
   });

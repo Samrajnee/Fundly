@@ -55,7 +55,10 @@ function StatCard({
         : "var(--color-ink)";
 
   return (
-    <div className="glass-surface" style={{ padding: "1.1rem 1.25rem" }}>
+    <div
+      className="glass-surface"
+      style={{ padding: "1.1rem 1.25rem" }}
+    >
       <p
         style={{
           fontSize: "0.78rem",
@@ -118,7 +121,11 @@ export default function DashboardPage() {
   }
 
   if (!data) {
-    return <main style={{ padding: "2.5rem" }}>Loading</main>;
+    return (
+      <main style={{ padding: "2.5rem" }}>
+        Loading
+      </main>
+    );
   }
 
   if (!data.hasActiveSalaryPlan) {
@@ -133,7 +140,8 @@ export default function DashboardPage() {
         <h1>Welcome to Fundly</h1>
 
         <p>
-          Start by creating your salary plan to unlock your dashboard.
+          Start by creating your salary plan to unlock your
+          dashboard.
         </p>
 
         <Link href="/salary-planner">
@@ -454,7 +462,9 @@ export default function DashboardPage() {
             {data.emergencyFundPercentComplete}% complete
           </p>
 
-          <Link href="/emergency-fund">View details</Link>
+          <Link href="/emergency-fund">
+            View details
+          </Link>
         </>
       )}
 
@@ -467,11 +477,20 @@ export default function DashboardPage() {
 
       {/* Financial Education */}
       <div style={{ marginTop: "2rem" }}>
-      <Link href="/education" style={{ textDecoration: "none" }}>
-        <button style={{ borderRadius: "999px" }}>
-          Financial education
-        </button>
-      </Link>
+        <Link
+          href="/education"
+          style={{ textDecoration: "none" }}
+        >
+          <button
+            style={{
+              borderRadius: "999px",
+              paddingLeft: "1.1rem",
+              marginLeft: "-1.1rem",
+            }}
+          >
+            Financial education
+          </button>
+        </Link>
       </div>
     </main>
   );

@@ -12,23 +12,23 @@ export default function AskFundlyPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onAsk() {
-    if (!question.trim()) return;
-    const userMessage: ChatMessage = { role: "user", content: question };
-    setMessages((prev) => [...prev, userMessage]);
-    setQuestion("");
-    setLoading(true);
-    setError(null);
+async function onAsk() {
+  if (!question.trim() || loading) return;
+  const userMessage: ChatMessage = { role: "user", content: question };
+  setMessages((prev) => [...prev, userMessage]);
+  setQuestion("");
+  setLoading(true);
+  setError(null);
 
-    try {
-      const result = await apiPost<{ answer: string }>("/ai/assistant/ask", { question: userMessage.content });
-      setMessages((prev) => [...prev, { role: "assistant", content: result.answer }]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+  try {
+    const result = await apiPost<{ answer: string }>("/ai/assistant/ask", { question: userMessage.content });
+    setMessages((prev) => [...prev, { role: "assistant", content: result.answer }]);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Something went wrong");
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <main style={{ maxWidth: 620, margin: "0 auto", padding: "2.5rem" }}>

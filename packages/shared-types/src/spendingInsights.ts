@@ -4,15 +4,15 @@ export interface CategorySpend {
   percentOfTotal: number;
 }
 
-export interface MonthlySpendChange {
+export interface MonthlyTrendPoint {
   month: string;
-  amount: number;
-  changePercent: number | null;
+  [categoryName: string]: string | number;
 }
 
 export interface SpendingInsightsDTO {
   topCategories: CategorySpend[];
-  monthlyTrend: MonthlySpendChange[];
+  monthlyTrend: MonthlyTrendPoint[];
+  trendCategories: string[];
   currentMonthSavingsRate: number;
   currentMonthTotalSpend: number;
 }

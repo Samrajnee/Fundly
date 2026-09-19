@@ -44,8 +44,8 @@ export default function SalaryHistoryPage() {
               </div>
 
               <p style={{ fontSize: "0.85rem", margin: "0.25rem 0 0.75rem" }}>
-                {new Date(entry.effectiveFrom).toLocaleDateString()} \u00b7 {LIVING_SITUATION_LABELS[entry.livingSituation]}
-                {entry.supportsFamily ? " \u00b7 Supports family" : ""}
+                {new Date(entry.effectiveFrom).toLocaleDateString()}, {LIVING_SITUATION_LABELS[entry.livingSituation]}
+                {entry.supportsFamily ? ", supports family" : ""}
               </p>
 
               {entry.changeFromPrevious && (

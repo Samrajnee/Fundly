@@ -1,6 +1,6 @@
 import { callGeminiTool, SchemaType } from "./gemini.service";
 import { z } from "zod";
-import { AppError } from "../middlewares/errorHandler";
+import { deterministicParseExpense } from "./deterministicExpenseParser.service";
 
 const parseExpenseResponseSchema = z.object({
   amount: z.number().positive(),
@@ -13,9 +13,8 @@ const parseExpenseResponseSchema = z.object({
 export async function parseExpenseText(text: string, categoryNames: string[]) {
   const today = new Date().toISOString().slice(0, 10);
 
-  let raw;
   try {
-    raw = await callGeminiTool({
+    const raw = await callGeminiTool({
       functionName: "extract_expense",
       functionDescription: "Extract structured expense details from a natural language description.",
       schema: {
@@ -35,27 +34,25 @@ Extract the expense details from this text: "${text}"
 
 Pick suggestedCategoryName from the available categories list exactly as written. If nothing fits well, use "Miscellaneous" if it's in the list. If the text doesn't clearly describe a single expense, set confidence to LOW.`,
     });
+
+    const parsed = parseExpenseResponseSchema.safeParse(raw);
+    if (parsed.success) {
+      const parsedDate = new Date(parsed.data.date);
+      if (!Number.isNaN(parsedDate.getTime()) && categoryNames.includes(parsed.data.suggestedCategoryName)) {
+        return {
+          amount: parsed.data.amount,
+          merchant: parsed.data.merchant ?? null,
+          date: parsed.data.date,
+          suggestedCategoryName: parsed.data.suggestedCategoryName,
+          confidence: parsed.data.confidence,
+        };
+      }
+    }
+    console.error("Gemini expense parse returned unusable data, falling back to keyword parser. Raw:", raw);
   } catch (err) {
-    console.error("Expense parse (Gemini call) failed:", err);
-    throw new AppError("Could not parse expense from that text. Try rephrasing.", 422);
+    console.error("Gemini expense parse failed, falling back to keyword parser:", err);
   }
 
-  const parsed = parseExpenseResponseSchema.safeParse(raw);
-  if (!parsed.success) {
-    console.error("Expense parse schema validation failed:", parsed.error.issues, "raw:", raw);
-    throw new AppError("Could not parse expense from that text. Try rephrasing.", 422);
-  }
-
-  const parsedDate = new Date(parsed.data.date);
-  if (Number.isNaN(parsedDate.getTime())) {
-    throw new AppError("Could not determine a valid date from that text.", 422);
-  }
-
-  return {
-    amount: parsed.data.amount,
-    merchant: parsed.data.merchant ?? null,
-    date: parsed.data.date,
-    suggestedCategoryName: parsed.data.suggestedCategoryName,
-    confidence: parsed.data.confidence,
-  };
+  // Deterministic fallback - always succeeds as long as an amount is present in the text.
+  return deterministicParseExpense(text, categoryNames);
 }
