@@ -32,9 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ThemeToggle />
     <AuthProvider>
       <AuthGate>
-        <div style={{ display: "flex" }}>
-          <Nav />
-          <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+        <div className="app-shell">
+         <Nav />
+        <div className="app-main">{children}</div>
         </div>
       </AuthGate>
     </AuthProvider>
