@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NAV_GROUPS = [
   {
@@ -72,14 +73,6 @@ function HamburgerIcon() {
   );
 }
 
-function CloseIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M6 6l12 12M18 6L6 18" />
-    </svg>
-  );
-}
-
 export function Nav() {
   const pathname = usePathname();
   const router = useRouter();
@@ -88,8 +81,9 @@ export function Nav() {
 
   if (!user) return null;
 
-  function close() {
+  function goTo(href: string) {
     setOpen(false);
+    router.push(href);
   }
 
   return (
@@ -114,26 +108,19 @@ export function Nav() {
         >
           <HamburgerIcon />
         </button>
-        <Link href="/dashboard" style={{ fontFamily: "var(--font-heading)", fontWeight: 500, fontSize: "1.1rem", color: "var(--color-ink)" }}>
+        <span style={{ fontFamily: "var(--font-heading)", fontWeight: 500, fontSize: "1.1rem", color: "var(--color-ink)" }}>
           Fundly
-        </Link>
+        </span>
+        <ThemeToggle variant="inline" />
       </div>
 
-      <div className={`nav-overlay ${open ? "open" : ""}`} onClick={close} />
+      <div className={`nav-overlay ${open ? "open" : ""}`} onClick={() => setOpen(false)} />
 
       <nav className={`glass-surface app-nav ${open ? "open" : ""}`}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.75rem", padding: "0 0.5rem" }}>
-          <Link href="/dashboard" onClick={close} style={{ fontFamily: "var(--font-heading)", fontWeight: 500, fontSize: "1.15rem", color: "var(--color-ink)" }}>
+        <div style={{ marginBottom: "1.75rem", padding: "0 0.5rem" }}>
+          <Link href="/dashboard" style={{ fontFamily: "var(--font-heading)", fontWeight: 500, fontSize: "1.15rem", color: "var(--color-ink)" }}>
             Fundly
           </Link>
-          <button
-            onClick={close}
-            className="nav-hamburger-close"
-            aria-label="Close menu"
-            style={{ background: "transparent", border: "none", padding: "0.25rem", color: "var(--color-text-secondary)" }}
-          >
-            <CloseIcon />
-          </button>
         </div>
 
         {NAV_GROUPS.map((group) => (
@@ -155,11 +142,12 @@ export function Nav() {
               {group.links.map((link) => {
                 const active = pathname === link.href;
                 return (
-                  <Link
+                  <button
                     key={link.href}
-                    href={link.href}
-                    onClick={close}
+                    onClick={() => goTo(link.href)}
                     style={{
+                      display: "block",
+                      textAlign: "left",
                       padding: "0.5rem 0.5rem",
                       borderRadius: "var(--radius-sm)",
                       fontSize: "0.88rem",
@@ -167,10 +155,12 @@ export function Nav() {
                       textDecoration: "none",
                       color: active ? "var(--color-accent-dark)" : "var(--color-text-secondary)",
                       background: active ? "var(--color-accent-light)" : "transparent",
+                      border: "none",
+                      width: "100%",
                     }}
                   >
                     {link.label}
-                  </Link>
+                  </button>
                 );
               })}
             </div>
@@ -178,12 +168,24 @@ export function Nav() {
         ))}
 
         <div style={{ marginTop: "1.5rem", borderTop: "1px solid var(--color-border)", paddingTop: "1rem" }}>
-          <Link href="/settings" onClick={close} style={{ display: "block", padding: "0.5rem 0.5rem", fontSize: "0.88rem", color: "var(--color-text-secondary)" }}>
+          <button
+            onClick={() => goTo("/settings")}
+            style={{
+              display: "block",
+              width: "100%",
+              textAlign: "left",
+              padding: "0.5rem 0.5rem",
+              fontSize: "0.88rem",
+              color: "var(--color-text-secondary)",
+              background: "transparent",
+              border: "none",
+            }}
+          >
             Settings
-          </Link>
+          </button>
           <button
             onClick={async () => {
-              close();
+              setOpen(false);
               await logout();
               router.push("/login");
             }}

@@ -272,281 +272,16 @@ input[type="checkbox"] {
 /* Remove number input spin arrows */
 input[type="number"] {
   -moz-appearance: textfield;
-}
-:root {
-  /* Light - sage porcelain */
-  --color-bg: #eef1ed;
-  --color-surface: #f8faf7;
-  --color-surface-alt: #e1e7dd;
-
-  --color-accent: #a6832f;
-  --color-accent-dark: #8a6c26;
-  --color-accent-light: #f0e3c3;
-
-  --color-primary: #1b3a2b;
-  --color-primary-dark: #14291f;
-  --color-primary-light: #dce7de;
-
-  --color-ink: #1f2621;
-  --color-text-secondary: #5c6459;
-  --color-text-muted: #8a9186;
-
-  --color-border: #dce3d8;
-  --color-border-strong: #c7d1c1;
-
-  --color-danger: #a6402e;
-  --color-danger-light: #f0d9d3;
-
-  --color-success: #2f6b4a;
-  --color-success-light: #dde8e0;
-
-  --color-notice: #4a5a52;
-  --color-notice-bg: #e4e9e2;
-
-  /* Liquid glass - active in both themes */
-  --glass-bg: linear-gradient(
-    135deg,
-    rgba(248, 250, 247, 0.78),
-    rgba(248, 250, 247, 0.34)
-  );
-
-  --glass-border: rgba(46, 92, 68, 0.22);
-
-  --glass-blur: 18px;
-
-  --glass-shadow:
-    0 8px 28px rgba(27, 58, 43, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
-
-  --glass-shadow-hover:
-    0 14px 38px rgba(27, 58, 43, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.75);
-
-  /* Typography */
-  --font-heading: var(--font-display), Georgia, serif;
-  --font-body: var(--font-sans), -apple-system, sans-serif;
-
-  /* Spacing + shape */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-
-  --shadow-card:
-    0 1px 2px rgba(20, 33, 26, 0.05),
-    0 4px 14px rgba(20, 33, 26, 0.05);
-}
-
-[data-theme="dark"] {
-  --color-bg: #14211a;
-  --color-surface: #1b2b22;
-  --color-surface-alt: #22352a;
-
-  --color-accent: #c6a24e;
-  --color-accent-dark: #ddb75c;
-  --color-accent-light: #3a3122;
-
-  --color-primary: #3e6b52;
-  --color-primary-dark: #5a8a6c;
-  --color-primary-light: #24382c;
-
-  --color-ink: #f2ecd9;
-  --color-text-secondary: #b7bfb2;
-  --color-text-muted: #7f8a7c;
-
-  --color-border: #2c3f32;
-  --color-border-strong: #3a5040;
-
-  --color-danger: #d9705a;
-  --color-danger-light: #3a2622;
-
-  --color-success: #86c4a0;
-  --color-success-light: #1f3327;
-
-  --color-notice: #b7c2ba;
-  --color-notice-bg: #223026;
-
-  /* Liquid glass - active in both themes */
-  --glass-bg: linear-gradient(
-    135deg,
-    rgba(34, 53, 42, 0.7),
-    rgba(20, 33, 26, 0.38)
-  );
-
-  --glass-border: rgba(198, 162, 78, 0.28);
-
-  --glass-blur: 20px;
-
-  --glass-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(198, 162, 78, 0.16);
-
-  --glass-shadow-hover:
-    0 14px 38px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(198, 162, 78, 0.26);
-
-  --shadow-card:
-    0 1px 2px rgba(0, 0, 0, 0.25),
-    0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* =========================================================
-   Base
-   ========================================================= */
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  padding: 0;
-  margin: 0;
-  background: var(--color-bg);
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-/* =========================================================
-   Typography
-   ========================================================= */
-
-h1,
-h2,
-h3 {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  color: var(--color-ink);
-  margin: 0 0 0.5rem;
-  letter-spacing: -0.01em;
-}
-
-h1 {
-  font-size: 1.9rem;
-}
-
-h2 {
-  font-size: 1.3rem;
-  margin-top: 2rem;
-}
-
-h3 {
-  font-size: 1.1rem;
-}
-
-p {
-  color: var(--color-text-secondary);
-  margin: 0 0 1rem;
-}
-
-/* =========================================================
-   Links
-   ========================================================= */
-
-a {
-  color: var(--color-accent-dark);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* =========================================================
-   Numbers + Tables
-   ========================================================= */
-
-.num,
-table {
-  font-variant-numeric: tabular-nums;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th {
-  text-align: left;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-td,
-th {
-  padding: 0.5rem 0.25rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-/* =========================================================
-   Form Controls
-   ========================================================= */
-
-input,
-select,
-textarea {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-ink);
-  width: 100%;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-light);
-}
-
-label {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  margin-bottom: 1rem;
-}
-
-label input,
-label select,
-label textarea {
-  margin-top: 0.3rem;
-}
-
-/* =========================================================
-   Checkbox
-   ========================================================= */
-
-input[type="checkbox"] {
-  width: auto;
-  accent-color: var(--color-primary);
-}
-
-[data-theme="dark"] input[type="checkbox"] {
-  accent-color: var(--color-accent);
-}
-
-/* =========================================================
-   Number Inputs
-   ========================================================= */
-
-/* Remove number input spin arrows */
-input[type="number"] {
-  -moz-appearance: textfield;
+  appearance: none;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
+
 
 /* =========================================================
    Buttons
@@ -596,6 +331,7 @@ button:disabled {
   transform: none;
 }
 
+
 /* =========================================================
    Liquid Glass
    ========================================================= */
@@ -617,6 +353,7 @@ button:disabled {
   box-shadow: var(--glass-shadow-hover);
 }
 
+
 /* =========================================================
    Notice Banner
    ========================================================= */
@@ -629,6 +366,7 @@ button:disabled {
   padding: 0.75rem 1rem;
   font-size: 0.88rem;
 }
+
 
 /* =========================================================
    Danger Chip
@@ -649,6 +387,7 @@ button:disabled {
   background: var(--color-danger);
   color: #fff;
 }
+
 
 /* =========================================================
    App Shell Layout
@@ -683,6 +422,7 @@ button:disabled {
   display: none;
 }
 
+
 /* =========================================================
    Mobile: Sidebar Drawer
    ========================================================= */
@@ -712,7 +452,7 @@ button:disabled {
     width: 100%;
   }
 
-    .mobile-topbar {
+  .mobile-topbar {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -733,7 +473,14 @@ button:disabled {
     background: rgba(20, 33, 26, 0.45);
     z-index: 50;
   }
+
+  /* The fixed theme toggle is replaced by the inline
+     theme toggle inside the mobile topbar. */
+  .theme-toggle-fixed {
+    display: none;
+  }
 }
+
 
 /* =========================================================
    Mobile: Page Spacing
@@ -748,6 +495,7 @@ button:disabled {
     font-size: 1.5rem !important;
   }
 }
+
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;

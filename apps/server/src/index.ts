@@ -44,6 +44,15 @@ import customMilestoneRoutes from "./routes/customMilestone.routes";
 import accountRoutes from "./routes/account.routes";
 import passwordResetRoutes from "./routes/passwordReset.routes";
 import aiUsageRoutes from "./routes/aiUsage.routes";
+import spendingSnapshotRoutes from "./routes/spendingSnapshot.routes";
+
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION — this would have crashed the server:", reason);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION — this would have crashed the server:", err);
+});
 
 const app = express();
 
@@ -91,6 +100,7 @@ app.use("/api/salary-history", requireAuth, salaryHistoryRoutes);
 app.use("/api/custom-milestones", requireAuth, customMilestoneRoutes);
 app.use("/api/account", requireAuth, accountRoutes);
 app.use("/api/ai/usage", requireAuth, aiUsageRoutes);
+app.use("/api/spending-snapshots", requireAuth, spendingSnapshotRoutes);
 
 app.use(errorHandler);
 

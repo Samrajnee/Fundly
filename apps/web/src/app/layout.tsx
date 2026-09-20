@@ -29,7 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${familjenGrotesk.variable} ${publicSans.variable}`} suppressHydrationWarning>
       <body>
   <ThemeProvider>
+    <div className="theme-toggle-fixed">
     <ThemeToggle />
+</div>
     <AuthProvider>
       <AuthGate>
         <div className="app-shell">

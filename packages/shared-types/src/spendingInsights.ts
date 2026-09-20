@@ -4,15 +4,29 @@ export interface CategorySpend {
   percentOfTotal: number;
 }
 
-export interface MonthlyTrendPoint {
-  month: string;
-  [categoryName: string]: string | number;
+export interface DailyTopCategoryEntry {
+  date: string;
+  categoryName: string;
+  amount: number;
 }
 
 export interface SpendingInsightsDTO {
   topCategories: CategorySpend[];
-  monthlyTrend: MonthlyTrendPoint[];
-  trendCategories: string[];
+  todayCategories: CategorySpend[];
+  dailyTopCategories: DailyTopCategoryEntry[];
   currentMonthSavingsRate: number;
   currentMonthTotalSpend: number;
+  todayTotalSpend: number;
+  month: number;
+  year: number;
+}
+
+export interface SpendingSnapshotDTO {
+  id: string;
+  month: number;
+  year: number;
+  totalSpend: number;
+  savingsRate: number;
+  categoryBreakdown: CategorySpend[];
+  createdAt: string;
 }

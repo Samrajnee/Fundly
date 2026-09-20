@@ -26,3 +26,4 @@ export * from "./aiWhatIf";
 export * from "./salaryHistory";
 export * from "./customMilestone";
 export * from "./account";
+export * from "./spendingInsights";
