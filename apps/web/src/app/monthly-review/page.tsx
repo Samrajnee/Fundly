@@ -12,11 +12,24 @@ export default function MonthlyReviewPage() {
   const [review, setReview] = useState<MonthlyReviewDTO | null>(null);
   const [aiReview, setAiReview] = useState<AIMonthlyReviewDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     apiGet<MonthlyReviewDTO>("/monthly-review").then(setReview).catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
     apiGet<AIMonthlyReviewDTO>("/ai/monthly-review").then(setAiReview).catch(() => setAiReview(null));
   }, []);
+
+  async function onRefreshReview() {
+    setRefreshing(true);
+    try {
+      const fresh = await apiGet<AIMonthlyReviewDTO>("/ai/monthly-review?refresh=true");
+      setAiReview(fresh);
+    } catch {
+      // silently keep the existing cached review on failure
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   if (error) return <main style={{ padding: "2.5rem" }}><p style={{ color: "var(--color-danger)" }}>{error}</p></main>;
   if (!review) return <main style={{ padding: "2.5rem" }}>Loading</main>;
@@ -43,6 +56,12 @@ export default function MonthlyReviewPage() {
         </Callout>
       )}
 
+      {aiReview && aiReview.source === "AI" && (
+        <button onClick={onRefreshReview} disabled={refreshing} style={{ marginBottom: "1.5rem", fontSize: "0.82rem" }}>
+          {refreshing ? "Refreshing" : "Refresh this month's review"}
+        </button>
+      )}
+
       <Card style={{ padding: 0 }}>
         <table>
           <thead><tr><th style={{ padding: "0.75rem 1rem" }}>Category</th><th style={{ textAlign: "right" }}>Planned</th><th style={{ textAlign: "right" }}>Actual</th><th style={{ textAlign: "right", paddingRight: "1rem" }}>Variance</th></tr></thead>
@@ -52,9 +71,9 @@ export default function MonthlyReviewPage() {
                 <td style={{ paddingLeft: "1rem" }}>{c.label}</td>
                 <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(c.planned)}</td>
                 <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(c.actual)}</td>
-               <td className="num" style={{ textAlign: "right", paddingRight: "1rem", color: c.variance > 0 ? "var(--color-danger)" : "var(--color-success)" }}>
-                {c.variance >= 0 ? "+" : "\u2212"}Rs {formatCurrency(Math.abs(c.variance))}
-              </td>
+                <td className="num" style={{ textAlign: "right", paddingRight: "1rem", color: c.variance > 0 ? "var(--color-danger)" : "var(--color-success)" }}>
+                  {c.variance >= 0 ? "+" : "\u2212"}Rs {formatCurrency(Math.abs(c.variance))}
+                </td>
               </tr>
             ))}
           </tbody>

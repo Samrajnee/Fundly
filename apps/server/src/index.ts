@@ -47,11 +47,11 @@ import aiUsageRoutes from "./routes/aiUsage.routes";
 import spendingSnapshotRoutes from "./routes/spendingSnapshot.routes";
 
 process.on("unhandledRejection", (reason) => {
-  console.error("UNHANDLED REJECTION — this would have crashed the server:", reason);
+  console.error("UNHANDLED REJECTION - this would have crashed the server:", reason);
 });
 
 process.on("uncaughtException", (err) => {
-  console.error("UNCAUGHT EXCEPTION — this would have crashed the server:", err);
+  console.error("UNCAUGHT EXCEPTION - this would have crashed the server:", err);
 });
 
 const app = express();

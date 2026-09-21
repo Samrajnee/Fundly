@@ -36,7 +36,7 @@ export async function getSpendingInsights(req: Request, res: Response, next: Nex
       }))
       .sort((a, b) => b.amount - a.amount);
 
-    // Today only, by category — bucket every transaction by its stored
+    // Today only, by category - bucket every transaction by its stored
     // calendar date, then compare against today's own calendar date the
     // same way, so both sides use the identical convention.
     const todayKey = dayKeyUTC(now);

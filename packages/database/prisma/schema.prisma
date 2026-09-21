@@ -49,6 +49,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   aiUsageLogs      AiUsageLog[]  
   spendingSnapshots SpendingSnapshot[]
+  aiMonthlyReviewCache AiMonthlyReviewCache[]
   }
 
 model SalaryProfile {
@@ -430,6 +431,24 @@ model SpendingSnapshot {
   categoryBreakdown Json
 
   createdAt         DateTime @default(now())
+
+  @@unique([userId, month, year])
+}
+
+model AiMonthlyReviewCache {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  month     Int
+  year      Int
+  summary   String
+  highlights Json
+  areasToImprove Json
+  source    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, month, year])
 }
