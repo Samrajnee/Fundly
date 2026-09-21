@@ -22,26 +22,38 @@ const publicSans = Public_Sans({
 export const metadata: Metadata = {
   title: "Fundly",
   description: "Plan your pay",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${familjenGrotesk.variable} ${publicSans.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${familjenGrotesk.variable} ${publicSans.variable}`}
+      suppressHydrationWarning
+    >
       <body>
-  <ThemeProvider>
-    <div className="theme-toggle-fixed">
-    <ThemeToggle />
-</div>
-    <AuthProvider>
-      <AuthGate>
-        <div className="app-shell">
-         <Nav />
-        <div className="app-main">{children}</div>
-        </div>
-      </AuthGate>
-    </AuthProvider>
-  </ThemeProvider>
-</body>
+        <ThemeProvider>
+          <div className="theme-toggle-fixed">
+            <ThemeToggle />
+          </div>
+
+          <AuthProvider>
+            <AuthGate>
+              <div className="app-shell">
+                <Nav />
+                <div className="app-main">{children}</div>
+              </div>
+            </AuthGate>
+          </AuthProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

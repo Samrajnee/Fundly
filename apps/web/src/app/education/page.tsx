@@ -25,8 +25,7 @@ export default function EducationListPage() {
         {articles.map((a) => (
           <Link key={a.slug} href={`/education/${a.slug}`} style={{ textDecoration: "none" }}>
             <Card>
-              <p style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", margin: "0 0 0.3rem" }}>{a.category} \u00b7 {a.readMinutes} min read</p>
-              <h3 style={{ margin: "0 0 0.3rem" }}>{a.title}</h3>
+              <p style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", margin: "0 0 0.3rem" }}>{a.category}, {a.readMinutes} min read</p>              <h3 style={{ margin: "0 0 0.3rem" }}>{a.title}</h3>
               <p style={{ margin: 0 }}>{a.summary}</p>
             </Card>
           </Link>
