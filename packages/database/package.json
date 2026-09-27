@@ -2,9 +2,10 @@
   "name": "@fundly/database",
   "version": "0.1.0",
   "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
@@ -18,7 +19,7 @@
     "@prisma/client": "^5.17.0"
   },
   "devDependencies": {
-    "@types/node": "^20.19.43",
+    "@types/node": "^20.14.0",
     "prisma": "^5.17.0",
     "tsx": "^4.15.6",
     "typescript": "^5.5.0"

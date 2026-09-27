@@ -11,15 +11,17 @@ export class AppError extends Error {
 
 export function errorHandler(
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
   _next: NextFunction
 ) {
   const statusCode = err instanceof AppError ? err.statusCode : 500;
+
   const message = err.message || "Internal Server Error";
 
-  res.status(statusCode).json({
-    success: false,
-    message,
-  });
+  if (!(err instanceof AppError)) {
+    console.error("Unexpected server error:", err);
+  }
+
+  res.status(statusCode).json({ success: false, message });
 }

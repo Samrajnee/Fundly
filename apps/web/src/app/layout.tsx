@@ -1,49 +1,38 @@
 import type { Metadata } from "next";
-import { Familjen_Grotesk, Public_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { ThemeProvider } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth-context";
 import { AuthGate } from "@/lib/auth-gate";
 import { Nav } from "@/components/Nav";
 
-const familjenGrotesk = Familjen_Grotesk({
-  subsets: ["latin"],
+const fraunces = localFont({
+  src: [
+    { path: "../fonts/fraunces-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/fraunces-600.woff2", weight: "600", style: "normal" },
+  ],
   variable: "--font-display",
-  weight: ["500", "600", "700"],
 });
 
-const publicSans = Public_Sans({
-  subsets: ["latin"],
+const publicSans = localFont({
+  src: [
+    { path: "../fonts/public-sans-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/public-sans-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/public-sans-600.woff2", weight: "600", style: "normal" },
+  ],
   variable: "--font-sans",
-  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
   title: "Fundly",
   description: "Plan your pay",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${familjenGrotesk.variable} ${publicSans.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={`${fraunces.variable} ${publicSans.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <div className="theme-toggle-fixed">
-            <ThemeToggle />
-          </div>
-
           <AuthProvider>
             <AuthGate>
               <div className="app-shell">

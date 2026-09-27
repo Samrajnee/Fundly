@@ -1,6 +1,7 @@
 {
   "name": "fundly",
-  "private": true, "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "turbo run dev --filter=web --filter=server",
     "dev:web": "turbo run dev --filter=web",
     "dev:server": "turbo run dev --filter=server",
@@ -8,7 +9,6 @@
     "lint": "turbo run lint --filter=web --filter=server",
     "type-check": "turbo run type-check --filter=web --filter=server"
   },
-
   "devDependencies": {
     "turbo": "^2.0.0",
     "typescript": "^5.5.0"

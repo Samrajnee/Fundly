@@ -3,7 +3,7 @@ import { calculateFinancialHealthScore } from "../services/healthScore.service";
 
 export async function getFinancialHealthScore(req: Request, res: Response, next: NextFunction) {
   try {
-    const score = await calculateFinancialHealthScore();
+    const score = await calculateFinancialHealthScore(req.userId!);
     res.json({ success: true, data: score });
   } catch (err) {
     next(err);
