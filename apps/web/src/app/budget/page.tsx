@@ -7,7 +7,7 @@ import type {
   BudgetProgressDTO,
   SafeToSpendDTO,
 } from "@fundly/shared-types";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatDaysLeft } from "@/lib/format";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 
@@ -30,31 +30,20 @@ export default function BudgetPage() {
   const { register, handleSubmit, reset } =
     useForm<BudgetFormValues>();
 
-  async function loadData() {
-    try {
-      const [cats, budgetProgress] = await Promise.all([
-        apiGet<Category[]>("/categories"),
-        apiGet<BudgetProgressDTO[]>("/budgets"),
-      ]);
-
-      setCategories(cats);
-      setProgress(budgetProgress);
-
-      try {
-        setSafeToSpend(
-          await apiGet<SafeToSpendDTO>("/safe-to-spend")
-        );
-      } catch {
-        setSafeToSpend(null);
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load data"
-      );
-    }
-  }
+   async function loadData() {
+     try {
+       const [cats, budgetProgress, sts] = await Promise.all([
+         apiGet<Category[]>("/categories"),
+         apiGet<BudgetProgressDTO[]>("/budgets"),
+         apiGet<SafeToSpendDTO>("/safe-to-spend").catch(() => null),
+       ]);
+       setCategories(cats);
+       setProgress(budgetProgress);
+       setSafeToSpend(sts);
+     } catch (err) {
+       setError(err instanceof Error ? err.message : "Failed to load data");
+     }
+   }
 
   useEffect(() => {
     loadData();
@@ -240,19 +229,9 @@ export default function BudgetPage() {
             )}
           </div>
 
-          <p
-            style={{
-              fontSize: "0.8rem",
-              color: "var(--color-text-muted)",
-              margin: "0.9rem 0 0",
-            }}
-          >
-            Rs {formatCurrency(safeToSpend.weeklySafeAmount)} this
-            week &middot;{" "}
-            {safeToSpend.daysLeftInMonth === 1
-              ? "today is the last day of the month"
-              : `${safeToSpend.daysLeftInMonth} days left`}
-          </p>
+   <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", margin: "0.9rem 0 0" }}>
+     Rs {formatCurrency(safeToSpend.weeklySafeAmount)} {safeToSpend.daysAfterToday + 1 < 7 ? "for the rest of the month" : "this week"} &middot; {formatDaysLeft(safeToSpend.daysAfterToday)}
+   </p>
         </Card>
       )}
 

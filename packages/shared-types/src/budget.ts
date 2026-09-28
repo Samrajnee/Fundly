@@ -17,7 +17,7 @@ export interface SafeToSpendDTO {
   dailySafeAmount: number;
   weeklySafeAmount: number;
   lifestyleBudgetRemaining: number;
-  daysLeftInMonth: number;
+  daysAfterToday: number;
   todayTarget: number;
   spentToday: number;
   remainingToday: number;

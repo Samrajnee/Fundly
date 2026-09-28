@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "recharts";
 import { apiGet } from "@/lib/api";
+   import { formatDaysLeft } from "@/lib/format";
 import type { DashboardDTO } from "@fundly/shared-types";
 import { useCountUp } from "@/lib/useCountUp";
 
@@ -108,9 +109,7 @@ export default function DashboardPage() {
       );
   }, []);
 
-  const safeToSpendAnimated = useCountUp(
-    data?.safeToSpend?.dailySafeAmount ?? 0
-  );
+   const safeToSpendAnimated = useCountUp(Math.max(data?.safeToSpend?.remainingToday ?? 0, 0));
 
   if (error) {
     return (
@@ -225,22 +224,10 @@ export default function DashboardPage() {
             Rs {formatCurrency(safeToSpendAnimated)}
           </p>
 
-          <p
-            style={{
-              fontSize: "0.85rem",
-              color: "var(--color-text-secondary)",
-              margin: "0.5rem 0 0",
-            }}
-          >
-            {data.safeToSpend.daysLeftInMonth === 1
-              ? "Today is the last day of the month"
-              : `${data.safeToSpend.daysLeftInMonth} days left this month`}{" "}
-            &middot; Rs{" "}
-            {formatCurrency(
-              data.safeToSpend.lifestyleBudgetRemaining
-            )}{" "}
-            lifestyle budget remaining
-          </p>
+             <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", margin: "0.5rem 0 0" }}>
+     {formatDaysLeft(data.safeToSpend.daysAfterToday)} &middot; Rs{" "}
+     {formatCurrency(data.safeToSpend.lifestyleBudgetRemaining)} lifestyle budget remaining
+   </p>
         </div>
       )}
 
