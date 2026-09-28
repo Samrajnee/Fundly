@@ -55,6 +55,7 @@ process.on("uncaughtException", (err) => {
 });
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
