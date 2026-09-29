@@ -10,7 +10,8 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["500", "600", "700"],
+  weight: "variable",
+  axes: ["opsz", "SOFT", "WONK"],
 });
 
 const publicSans = Public_Sans({
