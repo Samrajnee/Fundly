@@ -232,14 +232,7 @@ export default function DashboardPage() {
       )}
 
       {/* Secondary stats */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.3fr 1fr 1fr",
-          gap: "1rem",
-          marginTop: "1rem",
-        }}
-      >
+      <div className="dashboard-stats-grid">
         <StatCard
           label="Monthly salary"
           value={`Rs ${formatCurrency(data.monthlySalary ?? 0)}`}
@@ -261,15 +254,7 @@ export default function DashboardPage() {
 
       {/* Salary breakdown chart */}
       {data.breakdown && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "260px 1fr",
-            gap: "2rem",
-            alignItems: "center",
-            marginTop: "2.5rem",
-          }}
-        >
+        <div className="dashboard-breakdown-grid">
           <div style={{ height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

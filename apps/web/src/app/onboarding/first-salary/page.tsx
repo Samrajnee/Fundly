@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function FirstSalaryModePage() {
   return (
     <main style={{ maxWidth: 560, margin: "2rem auto", padding: "2rem" }}>
-      <h1>Congratulations on your first salary! 🎉</h1>
+      <h1>Congratulations on your first salary!</h1>
       <p>Here's how Fundly will help you turn it into a plan, not just a number in your account.</p>
 
       <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>

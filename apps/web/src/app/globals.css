@@ -134,6 +134,11 @@ body {
   line-height: 1.6;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 
 /* =========================================================
    Typography
@@ -432,13 +437,19 @@ button:disabled {
     display: block;
   }
 
+    @media (max-width: 420px) {
+    .app-nav {
+      max-width: 100%;
+    }
+  }
+
   .app-nav {
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-    width: 80vw;
-    max-width: 300px;
+    width: 100%;
+    max-width: 340px;
     transform: translateX(-100%);
     z-index: 60;
     border-radius: 0;
@@ -460,6 +471,8 @@ button:disabled {
     position: sticky;
     top: 0;
     z-index: 55;
+    width: 100%;
+    box-sizing: border-box;
     background: var(--glass-bg);
     -webkit-backdrop-filter: blur(var(--glass-blur));
     backdrop-filter: blur(var(--glass-blur));
@@ -587,6 +600,35 @@ button:disabled {
   font-size: 0.88rem;
 }
 
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dashboard-breakdown-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-breakdown-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .dashboard-breakdown-grid > div:first-child {
+    margin: 0 auto;
+  }
+}
 
 /* =========================================================
    Danger Chip
