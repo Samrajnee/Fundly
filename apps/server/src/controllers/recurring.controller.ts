@@ -2,15 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
-
-
+import { postDueRecurringExpenses } from "../services/recurringPosting.service";
 
 const createRecurringSchema = z.object({
   categoryId: z.string().min(1),
   label: z.string().min(1),
   amount: z.number().positive(),
   frequency: z.enum(["WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"]),
-  dueDay: z.number().min(1).max(31).optional(),
+  dueDay: z.number().min(1).max(31).nullable().optional(),
 });
 
 export async function createRecurringExpense(req: Request, res: Response, next: NextFunction) {
@@ -44,24 +43,11 @@ export async function listRecurringExpenses(req: Request, res: Response, next: N
   }
 }
 
-export async function deactivateRecurringExpense(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { id } = req.params;
-    const updated = await prisma.recurringExpense.update({
-      where: { id },
-      data: { isActive: false },
-    });
-    res.json({ success: true, data: updated });
-  } catch (err) {
-    next(err);
-  }
-}
-
 const updateRecurringSchema = z.object({
   label: z.string().min(1).optional(),
   amount: z.number().positive().optional(),
   frequency: z.enum(["WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"]).optional(),
-  dueDay: z.number().min(1).max(31).optional(),
+  dueDay: z.number().min(1).max(31).nullable().optional(),
 });
 
 export async function updateRecurringExpense(req: Request, res: Response, next: NextFunction) {
@@ -87,7 +73,18 @@ export async function updateRecurringExpense(req: Request, res: Response, next: 
   }
 }
 
-import { postDueRecurringExpenses } from "../services/recurringPosting.service";
+export async function deactivateRecurringExpense(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const updated = await prisma.recurringExpense.update({
+      where: { id },
+      data: { isActive: false },
+    });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function postDueNow(req: Request, res: Response, next: NextFunction) {
   try {

@@ -7,7 +7,7 @@ import { formatCurrency } from "@/lib/format";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 
-interface Category { id: string; name: string; }
+interface Category { id: string; name: string; type: string; }
 interface Transaction {
   id: string;
   amount: string;
@@ -33,6 +33,8 @@ export default function ExpensesPage() {
   const { register, handleSubmit, reset } = useForm<ExpenseFormValues>({
     defaultValues: { date: new Date().toISOString().slice(0, 10) },
   });
+
+  const selectableCategories = categories.filter((c) => c.type !== "GOAL");
 
   async function loadData() {
     try {
@@ -115,7 +117,7 @@ export default function ExpensesPage() {
           <label>Category
             <select {...register("categoryId", { required: true })}>
               <option value="">Select category</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {selectableCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </label>
           <label>Amount (Rs)<input type="number" step="0.01" {...register("amount", { required: true, valueAsNumber: true })} /></label>
@@ -137,13 +139,13 @@ export default function ExpensesPage() {
             <Card key={t.id} style={{ padding: "1rem 1.25rem" }}>
               {editingId === t.id ? (
                 <div>
-                  <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
-                    <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem", flexWrap: "wrap" }}>
+                    <div style={{ flex: "1 1 120px" }}>
                       <label style={{ marginBottom: "0.3rem" }}>Amount
                         <input type="number" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} />
                       </label>
                     </div>
-                    <div style={{ flex: 2 }}>
+                    <div style={{ flex: "2 1 200px" }}>
                       <label style={{ marginBottom: "0.3rem" }}>Note
                         <input type="text" value={editNote} onChange={(e) => setEditNote(e.target.value)} />
                       </label>
@@ -155,14 +157,15 @@ export default function ExpensesPage() {
                   </div>
                 </div>
               ) : (
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-                  <div style={{ minWidth: 90 }}>{new Date(t.date).toLocaleDateString()}</div>
-                  <div style={{ flex: 1 }}>
+                <div className="expense-row">
+                  <div className="expense-main">
                     <div>{t.category.name}{t.merchant ? ` \u00b7 ${t.merchant}` : ""}</div>
-                    {t.note && <small style={{ color: "var(--color-text-muted)" }}>{t.note}</small>}
+                    <small style={{ color: "var(--color-text-muted)" }}>
+                      {new Date(t.date).toLocaleDateString()}{t.note ? ` \u00b7 ${t.note}` : ""}
+                    </small>
                   </div>
-                  <div className="num" style={{ fontWeight: 600, minWidth: 90, textAlign: "right" }}>Rs {formatCurrency(Number(t.amount))}</div>
-                  <div style={{ display: "flex", gap: "0.4rem" }}>
+                  <div className="num" style={{ fontWeight: 600 }}>Rs {formatCurrency(Number(t.amount))}</div>
+                  <div className="expense-actions">
                     <button onClick={() => startEdit(t)} style={{ background: "transparent", color: "var(--color-text-secondary)", border: "1px solid var(--color-border-strong)", padding: "0.4rem 0.7rem", fontSize: "0.8rem" }}>Edit</button>
                     <button onClick={() => onDelete(t.id)} className="danger-chip">Delete</button>
                   </div>

@@ -7,10 +7,13 @@ import type { RecurringExpenseDTO } from "@fundly/shared-types";
 import { formatCurrency } from "@/lib/format";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
 
 interface Category { id: string; name: string; }
 interface RecurringFormValues { categoryId: string; label: string; amount: number; frequency: "WEEKLY" | "MONTHLY" | "QUARTERLY" | "YEARLY"; dueDay?: number; }
+
+function formatFrequency(freq: string): string {
+  return freq.charAt(0) + freq.slice(1).toLowerCase();
+}
 
 export default function RecurringPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -30,8 +33,17 @@ export default function RecurringPage() {
 
   async function onSubmit(values: RecurringFormValues) {
     setError(null);
-    try { await apiPost("/recurring", values); reset({ frequency: "MONTHLY" }); loadData(); }
-    catch (err) { setError(err instanceof Error ? err.message : "Failed to add recurring expense"); }
+    try {
+      await apiPost("/recurring", {
+        categoryId: values.categoryId,
+        label: values.label,
+        amount: Number(values.amount),
+        frequency: values.frequency,
+        dueDay: values.dueDay && !Number.isNaN(values.dueDay) ? values.dueDay : undefined,
+      });
+      reset({ categoryId: "", label: "", amount: undefined, frequency: "MONTHLY", dueDay: undefined });
+      loadData();
+    } catch (err) { setError(err instanceof Error ? err.message : "Failed to add recurring expense"); }
   }
 
   async function onPostDueNow() {
@@ -74,7 +86,7 @@ export default function RecurringPage() {
 
       <h2>Active recurring expenses</h2>
       {recurring.length === 0 ? (
-        <EmptyState message="No recurring expenses yet." />
+        <Card><p style={{ margin: 0 }}>No recurring expenses yet.</p></Card>
       ) : (
         <Card style={{ padding: 0 }}>
           <table>
@@ -83,7 +95,7 @@ export default function RecurringPage() {
               {recurring.map((r) => (
                 <tr key={r.id}>
                   <td style={{ paddingLeft: "1rem" }}>{r.label}</td>
-                  <td>{r.frequency}</td>
+                  <td>{formatFrequency(r.frequency)}</td>
                   <td className="num" style={{ textAlign: "right" }}>Rs {formatCurrency(r.amount)}</td>
                   <td style={{ textAlign: "right", paddingRight: "1rem" }}>{r.lastPostedDate ? new Date(r.lastPostedDate).toLocaleDateString() : "Never"}</td>
                 </tr>

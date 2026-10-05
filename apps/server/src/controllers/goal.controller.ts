@@ -4,8 +4,6 @@ import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 import { calculateMonthlyRequired } from "../services/goal.service";
 
-
-
 const createGoalSchema = z.object({
   name: z.string().min(1),
   targetAmount: z.number().positive(),
@@ -64,7 +62,7 @@ export async function contributeToGoal(req: Request, res: Response, next: NextFu
       throw new AppError(parsed.error.issues[0].message, 422);
     }
 
-    const goal = await prisma.goal.findUnique({ where: { id } });
+    const goal = await prisma.goal.findFirst({ where: { id, userId: req.userId! } });
     if (!goal) {
       throw new AppError("Goal not found", 404);
     }
@@ -84,11 +82,36 @@ export async function contributeToGoal(req: Request, res: Response, next: NextFu
       },
     });
 
+    // Record the contribution as a transaction so it shows up in Expense
+    // Tracker and is counted correctly in Monthly Review, Spending Insights,
+    // and anywhere else that reads from transaction history.
+    let goalCategory = await prisma.category.findFirst({
+      where: { userId: req.userId!, type: "GOAL" },
+    });
+    if (!goalCategory) {
+      goalCategory = await prisma.category.create({
+        data: { userId: req.userId!, name: "Goal Contribution", type: "GOAL", isDefault: true },
+      });
+    }
+
+    await prisma.transaction.create({
+      data: {
+        userId: req.userId!,
+        categoryId: goalCategory.id,
+        amount: parsed.data.amount,
+        merchant: goal.name,
+        note: `Contribution to ${goal.name}`,
+        date: new Date(),
+        source: "MANUAL",
+      },
+    });
+
     res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
   }
 }
+
 const updateGoalSchema = z.object({
   name: z.string().min(1).optional(),
   targetAmount: z.number().positive().optional(),
@@ -139,4 +162,3 @@ export async function deleteGoal(req: Request, res: Response, next: NextFunction
     next(err);
   }
 }
-

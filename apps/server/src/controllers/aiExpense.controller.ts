@@ -3,6 +3,7 @@ import { prisma } from "@fundly/database";
 import { z } from "zod";
 import { AppError } from "../middlewares/errorHandler";
 import { parseExpenseText } from "../services/aiExpenseParser.service";
+import { logAiUsage } from "../services/aiRateLimit.service";
 
 const parseSchema = z.object({ text: z.string().min(3) });
 
@@ -14,7 +15,7 @@ export async function parseExpense(req: Request, res: Response, next: NextFuncti
     }
 
     const categories = await prisma.category.findMany({
-      where: { userId: req.userId! },
+      where: { userId: req.userId!, type: { not: "GOAL" } },
       select: { id: true, name: true },
     });
 
@@ -22,7 +23,14 @@ export async function parseExpense(req: Request, res: Response, next: NextFuncti
       throw new AppError("No categories found for your account.", 404);
     }
 
-    const result = await parseExpenseText(parsed.data.text, categories.map((c) => c.name));
+    let result;
+    try {
+      result = await parseExpenseText(parsed.data.text, categories.map((c) => c.name));
+      await logAiUsage(req.userId!, "EXPENSE_PARSE", true);
+    } catch (err) {
+      await logAiUsage(req.userId!, "EXPENSE_PARSE", false);
+      throw err;
+    }
 
     let resolvedCategory = categories.find((c) => c.name === result.suggestedCategoryName);
     let usedFallbackCategory = false;

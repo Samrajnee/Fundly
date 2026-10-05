@@ -3,7 +3,14 @@ import { prisma } from "@fundly/database";
 function isDue(frequency: string, lastPostedDate: Date | null, dueDay: number | null): boolean {
   const now = new Date();
 
-  if (!lastPostedDate) return true; // never posted - due immediately
+  if (!lastPostedDate) {
+    // Never posted before — if a specific due day is set, wait until that day
+    // arrives in the current month before posting for the first time.
+    if (frequency === "MONTHLY" && dueDay) {
+      return now.getDate() >= dueDay;
+    }
+    return true;
+  }
 
   const monthsSince =
     (now.getFullYear() - lastPostedDate.getFullYear()) * 12 + (now.getMonth() - lastPostedDate.getMonth());
