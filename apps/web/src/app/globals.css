@@ -149,6 +149,8 @@ h2,
 h3 {
   font-family: var(--font-heading);
   font-weight: 600;
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 40;
   color: var(--color-ink);
   margin: 0 0 0.5rem;
   letter-spacing: -0.01em;
@@ -165,6 +167,13 @@ h2 {
 
 h3 {
   font-size: 1.1rem;
+}
+
+.display-figure {
+  font-family: var(--font-heading);
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 40;
+  font-weight: 500;
 }
 
 p {
@@ -437,7 +446,7 @@ button:disabled {
     display: block;
   }
 
-    @media (max-width: 420px) {
+  @media (max-width: 420px) {
     .app-nav {
       max-width: 100%;
     }
@@ -461,6 +470,7 @@ button:disabled {
 
   .app-main {
     width: 100%;
+    padding-top: 4.5rem;
   }
 
   .mobile-topbar {
@@ -468,8 +478,9 @@ button:disabled {
     align-items: center;
     gap: 0.75rem;
     padding: 0.85rem 1.1rem;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
     z-index: 55;
     width: 100%;
     box-sizing: border-box;
